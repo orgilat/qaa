@@ -416,39 +416,45 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
         time.sleep(6)  # ש
    
 
-    with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
-    # המתן עד שכפתור ה-dropdown יהיה לחיץ בתוך התיבה עם התווית "הגדרת סוג היחידה לאירוע"
-     unit_dropdown_button = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
+      with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
+
+    # המתן להיעלמות שכבת הטעינה (אם קיימת)
+       WebDriverWait(driver, 15).until_not(
+        EC.presence_of_element_located(
+            (By.XPATH, "//div[contains(@class, 'dx-overlay-wrapper') and contains(@class, 'dx-loadpanel-wrapper')]")
+        )
+    )
+
+    # המתן עד שכפתור ה-dropdown יהיה לחיץ
+    unit_dropdown_button = WebDriverWait(driver, 15).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]")
         )
     )
-     unit_dropdown_button.click()
+    unit_dropdown_button.click()
 
     # המתן עד להופעת רשימת הבחירה ובחר באפשרות "מטה"
-     unit_option_mathe = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
+    unit_option_mathe = WebDriverWait(driver, 15).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//div[@class='dropdown-list']//li//div[contains(@class, 'list-item')]//span[normalize-space(text())='מטה']")
         )
     )
-     unit_option_mathe.click()
-     passed += 2
-     time.sleep(3)
+    unit_option_mathe.click()
+
+    passed += 2
+    time.sleep(3)
 
 
-
-
-     
   
-     with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
-      checkbox_pikud2 = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
-        EC.element_to_be_clickable(
+    with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
+         checkbox_pikud2 = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
+          EC.element_to_be_clickable(
             (By.XPATH, "//li[@data-item-id='249']//div[contains(@class, 'dx-checkbox-container')]")
         )
     )
-     checkbox_pikud2.click()
-     passed += 1
-     time.sleep(11)
+         checkbox_pikud2.click()
+         passed += 1
+         time.sleep(11)
 
 
 
