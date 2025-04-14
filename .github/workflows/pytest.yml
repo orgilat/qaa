@@ -2,47 +2,39 @@ name: Run Pytest Tests and Generate Allure Report
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - main
   pull_request:
-    branches: [ master ]
+    branches:
+      - main
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # הרץ את הבדיקות על שרת מבוסס לינוקס
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2  # בודק את הקוד שלך
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'
+        python-version: '3.8'  # גרסת Python שלך
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        pip install -r requirements.txt  # מתקין את כל התלויות שצוינו ב-requirements.txt
 
     - name: Install Allure
       run: |
-        sudo apt-get update
-        sudo apt-get install -y default-jre
-        curl -o allure.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
-        unzip allure.zip -d /opt/
-        sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure
-
-    - name: Debug - List files
-      run: |
-        echo "Listing all files in the repository"
-        ls -R
+        curl -o allure-2.14.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
+        unzip allure-2.14.0.zip -d /opt
+        sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure  # התקנת allure כדי שנוכל להשתמש בו
 
     - name: Run Pytest and generate allure results
       run: |
-        pytest automation/test_survey.py --alluredir=allure-results
+        pytest --alluredir=allure-results  # הרץ את הבדיקות ושמור את התוצאות
 
-    - name: Archive allure results
-      if: always()
-      uses: actions/upload-artifact@v2
-      with:
-        name: allure-results
-        path: allure-results
+    - name: Generate Allure Report
+      run: |
+        allure serve allure-results  # מציג את דוח allure
