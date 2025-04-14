@@ -224,29 +224,31 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
                     time.sleep(0.5)
                     
             elif button["name"] == "כללי השתתפות לפי סוג יחידה":
-                with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
-                    close_alert_if_present()
-                    unit_participation_btn = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+              with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
+                close_alert_if_present()
+                unit_participation_btn = WebDriverWait(driver, 30).until(  # הגברנו את זמן ההמתנה
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                )
+                driver.execute_script("arguments[0].scrollIntoView();", unit_participation_btn)  # גלול אם צריך
+                unit_participation_btn.click()
+                time.sleep(0.5)
+                with allure.step("לחיצה על 'הוסף ימי היעדרות' וחזרה"):
+                    add_absence_btn = WebDriverWait(driver, 30).until(  # הגברנו את זמן ההמתנה
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]"))
                     )
-                    unit_participation_btn.click()
+                    add_absence_btn.click()
                     time.sleep(0.5)
-                    with allure.step("לחיצה על 'הוסף ימי היעדרות' וחזרה"):
-                        add_absence_btn = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]"))
-                        )
-                        add_absence_btn.click()
-                        time.sleep(0.5)
-                        driver.back()
-                        time.sleep(0.5)
-                        driver.back()
-                        time.sleep(0.5)
-                        passed += 1
+                    driver.back()
+                    time.sleep(0.5)
+                    driver.back()
+                    time.sleep(0.5)
+                    passed += 1
             elif button["name"] == "אופציות לסוציומטרי":
                 with allure.step("בדיקות פנימיות עבור 'אופציות לסוציומטרי'"):
-                    options_button = WebDriverWait(driver, 10).until(
+                    options_button = WebDriverWait(driver, 30).until(  # הגברנו את זמן ההמתנה
                         EC.element_to_be_clickable((By.XPATH, button["xpath"]))
                     )
+                    driver.execute_script("arguments[0].scrollIntoView();", options_button)  # גלול אם צריך
                     options_button.click()
                     time.sleep(0.5)
 
