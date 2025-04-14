@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
 import time
+from webdriver_manager.chrome import ChromeDriverManager
 
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
@@ -21,9 +22,12 @@ def driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     
-    driver = webdriver.Chrome(options=options)
+    # השתמש ב-WebDriver Manager כדי להוריד ולהתקין את הדרייבר המתאים
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    
     yield driver
     driver.quit()
+
 
 
 @allure.feature("ניהול סקרים")
