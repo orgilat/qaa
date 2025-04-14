@@ -1,14 +1,11 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-# הגדרת אפשרויות לדפדפן
 options = Options()
-options.add_argument("--headless")  # הפעלת מצב headless
-options.add_argument("window-size=1920x1080")  # גודל חלון מותאם
-options.add_argument("user-data-dir=/tmp/chrome-user-data")  # פרופיל משתמש ייחודי
+options.add_argument("--headless")  # מצב ללא ממשק
+options.add_argument("window-size=1920x1080")
 
-# הפעלת דפדפן עם האפשרויות
-driver = webdriver.Chrome(options=options)  # כאן ייווצר הדפדפן עם האפשרויות שלך
+driver = webdriver.Chrome(options=options)
 
 
 
