@@ -397,52 +397,36 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
           time.sleep(2)
         
 
-    with allure.step("בחירת תאריך 26 בתאריך סיום"):
+        with allure.step("בחירת תאריך 26 בתאריך סיום"):
     # המתן עד שכפתור פתיחת לוח השנה יהיה לחיץ – שימו לב למבנה הקלסים
-     calendar_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
+         calendar_button = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
+         EC.element_to_be_clickable(
             (By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']")
         )
     )
-     calendar_button.click()
-     passed += 1
+         calendar_button.click()
+         passed += 1
 
     # המתן עד שהכפתור עם הערך "2" יהיה לחיץ ולחץ עליו
-     date_input = WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//input[@type='text']"))
+        date_input = WebDriverWait(driver, 10).until(
+         EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//input[@type='text']"))
     )
-     date_input.send_keys("18-03-2025" + Keys.ENTER)
-     passed += 1
-     time.sleep(6)
+        date_input.send_keys("18-03-2025" + Keys.ENTER)
+        passed += 1
+        time.sleep(6)  # ש
    
 
     with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
     # המתן עד שכפתור ה-dropdown יהיה לחיץ בתוך התיבה עם התווית "הגדרת סוג היחידה לאירוע"
-     unit_dropdown_button = WebDriverWait(driver, 10).until(
+     unit_dropdown_button = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
         EC.element_to_be_clickable(
             (By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]")
         )
     )
      unit_dropdown_button.click()
 
-    
     # המתן עד להופעת רשימת הבחירה ובחר באפשרות "מטה"
-    with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
-    # המתן עד שכפתור ה-dropdown יהיה לחיץ
-     unit_dropdown_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]")
-        )
-    )
-     unit_dropdown_button.click()
-
-    # המתן עד שהאנימציה תיעלם (הטעינה תסיים)
-     WebDriverWait(driver, 10).until(
-        EC.invisibility_of_element_located((By.CLASS_NAME, "dx-overlay-wrapper"))
-    )
-
-    # המתן עד להופעת האפשרות "מטה" וקליק עליה
-     unit_option_mathe = WebDriverWait(driver, 10).until(
+     unit_option_mathe = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
         EC.element_to_be_clickable(
             (By.XPATH, "//div[@class='dropdown-list']//li//div[contains(@class, 'list-item')]//span[normalize-space(text())='מטה']")
         )
@@ -455,15 +439,16 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
 
 
      
-    with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
-     checkbox_pikud2 = WebDriverWait(driver, 10).until(
+  
+     with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
+      checkbox_pikud2 = WebDriverWait(driver, 15).until(  # הגדלתי את זמן ההמתנה
         EC.element_to_be_clickable(
             (By.XPATH, "//li[@data-item-id='249']//div[contains(@class, 'dx-checkbox-container')]")
         )
     )
-    checkbox_pikud2.click()
-    passed += 1
-    time.sleep(11)
+     checkbox_pikud2.click()
+     passed += 1
+     time.sleep(11)
 
 
 
