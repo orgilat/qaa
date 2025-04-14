@@ -1,0 +1,30 @@
+name: Run Pytest Tests
+
+on:
+  push:
+    branches:
+      - main  # כל פעם שתעשה push ל-main, זה יריץ את הבדיקות
+  pull_request:
+    branches:
+      - main  # כל פעם שתעשה pull request, הבדיקות ירוצו גם כן
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # מריץ את הבדיקות על שרת מבוסס לינוקס
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # בודק את הקוד שלך
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # תבחר את גרסת ה-Python שלך, אם לא 3.8 תעדכן
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt  # מתקין את כל התלויות (כמו pytest) שצוינו בקובץ requirements.txt
+
+    - name: Run Pytest
+      run: |
+        pytest  # מריץ את הבדיקות שלך
