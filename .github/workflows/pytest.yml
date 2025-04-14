@@ -1,4 +1,4 @@
-name: Run Pytest Tests
+name: Run Pytest Tests and Generate Allure Report
 
 on:
   push:
@@ -23,8 +23,18 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt  # מתקין את כל התלויות (כמו pytest) שצוינו בקובץ requirements.txt
+        pip install -r requirements.txt  # מתקין את כל התלויות (כמו pytest ו-allure-pytest)
 
-    - name: Run Pytest
+    - name: Install Allure
       run: |
-        pytest  # מריץ את הבדיקות שלך
+        curl -o allure-2.14.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
+        unzip allure-2.14.0.zip -d /opt
+        sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure  # התקנת allure כדי שנוכל להשתמש בו
+
+    - name: Run Pytest and generate allure results
+      run: |
+        pytest --alluredir=allure-results  # הרץ את הבדיקות ושמור את התוצאות
+
+    - name: Generate Allure Report
+      run: |
+        allure serve allure-results  # מציג את דוח allure
