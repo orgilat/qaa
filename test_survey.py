@@ -8,25 +8,27 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.chrome.service import Service
 import time
-from webdriver_manager.chrome import ChromeDriverManager
 
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
 
-# 🧪 Pytest Fixture שפותחת סוגרת דפדפן אוטומטית
+# 🧪 Pytest Fixture שפותחת וסוגרת דפדפן אוטומטית
 @pytest.fixture(scope="function")
 def driver():
     options = Options()
     options.add_argument("--headless")  # אם תרצה להריץ בלי חלון גרפי
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
-    # השתמש ב-WebDriver Manager כדי להוריד ולהתקין את הדרייבר המתאים
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-    
+
+    # נניח ש-chromedriver נמצא ב־PATH
+    service = Service("chromedriver")  # או נתיב מלא: Service("/usr/local/bin/chromedriver")
+    driver = webdriver.Chrome(service=service, options=options)
+
     yield driver
     driver.quit()
+
 
 
 
