@@ -1,15 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-chrome_options = Options()
-chrome_options.add_argument("--headless")  # מריץ ללא ממשק גרפי
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--user-data-dir=/tmp/unique-profile")
-
-driver = webdriver.Chrome(options=chrome_options)
-
+options = Options()
+options.add_argument("--user-data-dir=/tmp/some_unique_directory")  # משנה את נתיב המשתמש
+driver = webdriver.Chrome(options=options)
 
 
 import pytest  # מייבא את pytest לביצוע הבדיקות
