@@ -7,9 +7,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.chrome.service import Service
 import time
@@ -435,22 +432,22 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
             (By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]")
         )
     )
-    unit_dropdown_button.click()
+     unit_dropdown_button.click()
 
     # המתן עד שהאנימציה תיעלם (הטעינה תסיים)
-    WebDriverWait(driver, 10).until(
+     WebDriverWait(driver, 10).until(
         EC.invisibility_of_element_located((By.CLASS_NAME, "dx-overlay-wrapper"))
     )
 
     # המתן עד להופעת האפשרות "מטה" וקליק עליה
-    unit_option_mathe = WebDriverWait(driver, 10).until(
+     unit_option_mathe = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//div[@class='dropdown-list']//li//div[contains(@class, 'list-item')]//span[normalize-space(text())='מטה']")
         )
     )
-    unit_option_mathe.click()
-    passed += 2
-    time.sleep(3)
+     unit_option_mathe.click()
+     passed += 2
+     time.sleep(3)
 
 
 
