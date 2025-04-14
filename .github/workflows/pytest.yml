@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - master
-  workflow_dispatch:  # מאפשר להריץ ידנית דרך כפתור בגיטהאב
 
 jobs:
   test:
@@ -34,13 +33,13 @@ jobs:
 
     - name: Run Pytest and generate allure results
       run: |
-        pytest --alluredir=allure-results
+        pytest test_survey.py --alluredir=allure-results
 
     - name: Generate Allure Report
       run: |
         allure generate allure-results --clean -o allure-report
 
-    - name: Upload Allure Report Artifact
+    - name: Upload Allure Report
       uses: actions/upload-artifact@v3
       with:
         name: allure-report
