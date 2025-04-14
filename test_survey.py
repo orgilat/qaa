@@ -10,6 +10,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.chrome.service import Service
 import time
+import shutil  # נוסיף לבדיקה האם chromedriver קיים
 
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
@@ -18,16 +19,21 @@ start_time = time.time()
 @pytest.fixture(scope="function")
 def driver():
     options = Options()
-    options.add_argument("--headless")  # אם תרצה להריץ בלי חלון גרפי
+    options.add_argument("--headless=new")  # מצב ללא GUI בצורה יציבה יותר
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # נניח ש-chromedriver נמצא ב־PATH
-    service = Service("chromedriver")  # או נתיב מלא: Service("/usr/local/bin/chromedriver")
+    # בדיקה אם chromedriver קיים במערכת
+    driver_path = shutil.which("chromedriver")
+    if not driver_path:
+        raise RuntimeError("chromedriver לא נמצא במערכת או ב־PATH")
+
+    service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=options)
 
     yield driver
     driver.quit()
+
 
 
 
