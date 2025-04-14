@@ -3,10 +3,10 @@ name: Run Pytest Tests and Generate Allure Report
 on:
   push:
     branches:
-      - main  # כל פעם שתעשה push ל-main, זה יריץ את הבדיקות
+      - master  # כל פעם שתעשה push ל-master, זה יריץ את הבדיקות
   pull_request:
     branches:
-      - main  # כל פעם שתעשה pull request, הבדיקות ירוצו גם כן
+      - master  # כל פעם שתעשה pull request ל-master, הבדיקות ירוצו גם כן
 
 jobs:
   test:
