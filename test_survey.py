@@ -1,11 +1,18 @@
+import tempfile
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 options = Options()
-options.add_argument("--headless")  # מצב ללא ממשק
-options.add_argument("window-size=1920x1080")
+options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+
+# צור תקייה זמנית עבור user-data-dir
+user_data_dir = tempfile.mkdtemp()
+options.add_argument(f"--user-data-dir={user_data_dir}")
 
 driver = webdriver.Chrome(options=options)
+
 
 
 
