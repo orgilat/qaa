@@ -1,27 +1,29 @@
+import pytest
+import allure
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.alert import Alert
+import time
 
-options = Options()
-options.add_argument("--user-data-dir=/tmp/some_unique_directory")  # משנה את נתיב המשתמש
-driver = webdriver.Chrome(options=options)
+# ⏱️ לא חובה אבל נחמד לדיבוג
+start_time = time.time()
 
+# 🧪 Pytest Fixture שפותחת סוגרת דפדפן אוטומטית
+@pytest.fixture(scope="function")
+def driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(options=options)
+    yield driver
+    driver.quit()
 
-import pytest  # מייבא את pytest לביצוע הבדיקות
-import allure  # מייבא את allure ליצירת דוחות בצורה יפה ומסודרת
-from selenium import webdriver  # מייבא את webdriver של selenium לתפעול הדפדפן
-from selenium.webdriver.common.by import By  # מייבא את המודול למציאת אלמנטים לפי אובייקטים
-from selenium.webdriver.common.keys import Keys  # מייבא את המודול לניהול מקשים
-from selenium.webdriver.support.ui import WebDriverWait  # מייבא את WebDriverWait שמחכה עד שמצא את האלמנט
-from selenium.webdriver.support import expected_conditions as EC  # מייבא את EC לפיקוח על מצב האלמנטים
-from selenium.webdriver.common.action_chains import ActionChains  # מייבא את ActionChains לשליטה על פעולות ריחוף ולחיצה
-from selenium.webdriver.common.alert import Alert  # מייבא את Alert לעבודה עם הודעות קופצות
-import time  # מייבא את time ליישום חיכויים
-
-start_time = time.time() 
-# תוויות Allure מתקדמות להמחשת תצורת פרויקט עבודה אמיתי
-@allure.title("בדיקת תפקוד לחצנים באתר 'תמורות' - מעבר חלק בין מסכים")
-
-@allure.epic("מערכת ניהול סקרים")
 @allure.feature("ניהול סקרים")
 @allure.story("בדיקת לחצנים באתר תמורות")
 @allure.severity(allure.severity_level.CRITICAL)
