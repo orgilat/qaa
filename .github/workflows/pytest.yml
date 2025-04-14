@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Pytest and generate allure results
         run: |
-          pytest test_servey.py --alluredir=allure-results
+          pytest test_survey.py --alluredir=allure-results
 
       - name: Generate Allure Report (HTML)
         run: |
