@@ -3,38 +3,46 @@ name: Run Pytest Tests and Generate Allure Report
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
+  workflow_dispatch:  # מאפשר להריץ ידנית מ-UI של GitHub
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # הרץ את הבדיקות על שרת מבוסס לינוקס
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: automation  # כל הפקודות ירוצו מתוך תיקיית automation
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2  # בודק את הקוד שלך
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'  # גרסת Python שלך
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt  # מתקין את כל התלויות שצוינו ב-requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
 
-    - name: Install Allure
-      run: |
-        curl -o allure-2.14.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
-        unzip allure-2.14.0.zip -d /opt
-        sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure  # התקנת allure כדי שנוכל להשתמש בו
+      - name: Install Allure
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre  # Allure דורש Java
+          curl -o allure-2.14.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
+          unzip allure-2.14.0.zip -d /opt
+          sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure
 
-    - name: Run Pytest and generate allure results
-      run: |
-        pytest --alluredir=allure-results  # הרץ את הבדיקות ושמור את התוצאות
+      - name: Run Pytest and generate allure results
+        run: |
+          pytest test_servey.py --alluredir=allure-results
 
-    - name: Generate Allure Report
-      run: |
-        allure serve allure-results  # מציג את דוח allure
+      - name: Generate Allure Report (HTML)
+        run: |
+          allure generate allure-results --clean -o allure-report
+          ls allure-report  # מדפיס את התכולה (לצפייה בלוגים)
