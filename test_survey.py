@@ -20,8 +20,7 @@ def driver():
     options.add_argument("--headless")  # אם תרצה להריץ בלי חלון גרפי
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-
-    # אין צורך להוסיף נתיב user-data-dir
+    
     driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
