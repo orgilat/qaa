@@ -17,17 +17,15 @@ start_time = time.time()
 @pytest.fixture(scope="function")
 def driver():
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless")  # אם תרצה להריץ בלי חלון גרפי
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
-    # הוספת נתיב ייחודי ל-user-data-dir
-    options.add_argument(f"--user-data-dir=/tmp/selenium_user_data_{str(time.time())}")
-    
+
+    # אין צורך להוסיף נתיב user-data-dir
     driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
-    
+
 @allure.feature("ניהול סקרים")
 @allure.story("בדיקת לחצנים באתר תמורות")
 @allure.severity(allure.severity_level.CRITICAL)
