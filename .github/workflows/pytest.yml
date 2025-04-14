@@ -2,11 +2,9 @@ name: Run Pytest Tests and Generate Allure Report
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   test:
@@ -27,20 +25,24 @@ jobs:
 
     - name: Install Allure
       run: |
-        curl -o allure-2.14.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
-        unzip allure-2.14.0.zip -d /opt
+        sudo apt-get update
+        sudo apt-get install -y default-jre
+        curl -o allure.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
+        unzip allure.zip -d /opt/
         sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure
+
+    - name: Debug - List files
+      run: |
+        echo "Listing all files in the repository"
+        ls -R
 
     - name: Run Pytest and generate allure results
       run: |
-        pytest test_survey.py --alluredir=allure-results
+        pytest automation/test_survey.py --alluredir=allure-results
 
-    - name: Generate Allure Report
-      run: |
-        allure generate allure-results --clean -o allure-report
-
-    - name: Upload Allure Report
-      uses: actions/upload-artifact@v3
+    - name: Archive allure results
+      if: always()
+      uses: actions/upload-artifact@v2
       with:
-        name: allure-report
-        path: allure-report
+        name: allure-results
+        path: allure-results
