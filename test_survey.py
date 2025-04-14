@@ -25,6 +25,7 @@ def driver():
     yield driver
     driver.quit()
 
+
 @allure.feature("ניהול סקרים")
 @allure.story("בדיקת לחצנים באתר תמורות")
 @allure.severity(allure.severity_level.CRITICAL)
