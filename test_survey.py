@@ -53,10 +53,10 @@ def driver():
       <li>תיעוד מפורט של כל שלב בדוח Allure.</li>
     </ul>
 """)
-def test_survey_buttons():
-    driver = webdriver.Chrome()  # פתיחת דפדפן Chrome
+def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
     passed = 0  # ספירת הצלחות
     failed = 0  # ספירת כישלונות
+ 
 
     # רשימת הכפתורים במסך ניהול סוציומטרי
     buttons = [
