@@ -102,19 +102,13 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
     try:
         with allure.step("פתיחת האתר והתחברות"):
             driver.get("https://www.survey.co.il/pms/MMDANEW/default.asp")
-    
-    # חכה לשדות התחברות
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "login")))
+            time.sleep(3.5)
             username = driver.find_element(By.NAME, "login")
             password = driver.find_element(By.NAME, "password")
-    
             username.send_keys("MARINAS")
             password.send_keys("Ms123456")
             password.send_keys(Keys.RETURN)
-    
-    # חכה שהעמוד הבא יטען ע"י נוכחות של אלמנט כלשהו שידוע לך שהוא מופיע רק אחרי התחברות,
-
-    
+            time.sleep(3.5)
             allure.attach(driver.current_url, name="כתובת האתר לאחר התחברות", attachment_type=allure.attachment_type.TEXT)
 
         with allure.step("מעבר למסך ניהול סוציומטרי"):
