@@ -24,20 +24,18 @@ failed = 0
 @pytest.fixture(scope="function")
 def driver():
     options = Options()
-    options.add_argument("--headless=new")  # מצב ללא GUI בצורה יציבה יותר
+    options.add_argument("--headless=new")  
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # בדיקה אם chromedriver קיים במערכת
     driver_path = shutil.which("chromedriver")
     if not driver_path:
         raise RuntimeError("chromedriver לא נמצא במערכת או ב־PATH")
 
     service = Service(driver_path)
-    driver = webdriver.Chrome(service=service, options=options)
-
-    yield driver
-    driver.quit()
+    _driver = webdriver.Chrome(service=service, options=options)
+    yield _driver
+    _driver.quit()
 
 
 
