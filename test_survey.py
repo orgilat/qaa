@@ -267,8 +267,12 @@ def test_survey_buttons(driver):
 
 with allure.step("לחיצה על ניהול פוטנציאל"):
     try:
+        # ודא שה-driver הוא מופע של WebDriver לפני השימוש
         manage_potential_tab = WebDriverWait(driver, 100).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[.//div[contains(@class, 'q-tab__label') and normalize-space(text())='ניהול פוטנציאל']]"))
+            EC.element_to_be_clickable((
+                By.XPATH,
+                "//a[.//div[contains(@class, 'q-tab__label') and normalize-space(text())='ניהול פוטנציאל']]"
+            ))
         )
         manage_potential_tab.click()
         passed += 1
