@@ -141,13 +141,13 @@ def test_survey_buttons(driver):
              with allure.step("בדיקות פנימיות עבור 'שאלות חובה'"):
               close_alert_if_present()
               questions_btn = WebDriverWait(driver, 100).until(
-              EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                 EC.element_to_be_clickable((By.XPATH, button["xpath"]))
         )
               questions_btn.click()
 
               with allure.step("לחיצה על 'ערוך' וחזרה"):
                 edit_btn = WebDriverWait(driver, 100).until(
-                EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'ערוך')]"))
+                  EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'ערוך')]"))
             )
                 edit_btn.click()
                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
@@ -161,19 +161,19 @@ def test_survey_buttons(driver):
                 with allure.step("בדיקות פנימיות עבור 'חוקים על שאלות'"):
                     with allure.step("כניסה למסך 'חוקים על שאלות'"):
                       element = WebDriverWait(driver, 100).until(
-                      EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))
             )
                       element.click()
                     with allure.step("הקלדה בתיבת החיפוש בתוך 'חוקים על שאלות'"):
                         search_input = WebDriverWait(driver, 100).until(
-                        EC.visibility_of_element_located((By.ID, "dt-search-0"))
+                          EC.visibility_of_element_located((By.ID, "dt-search-0"))
             )
                         search_input.clear()
                         search_input.send_keys("שי אגיב שי אגיב")
                         passed += 1
                     with allure.step("לחיצה על 'שאלון סוציומטרי' בתוך 'חוקים על שאלות'"):
                         combo = WebDriverWait(driver, 100).until(
-                        EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.ss-arrow"))
+                          EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.ss-arrow"))
             )
                         combo.click()
                         passed += 1
@@ -186,7 +186,7 @@ def test_survey_buttons(driver):
                 with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
                   close_alert_if_present()
                   unit_participation_btn = WebDriverWait(driver, 100).until(
-                  EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
         )
                   driver.execute_script("arguments[0].scrollIntoView();", unit_participation_btn)
                   unit_participation_btn.click()
@@ -205,22 +205,22 @@ def test_survey_buttons(driver):
             elif button["name"] == "אופציות לסוציומטרי":
                 with allure.step("בדיקות פנימיות עבור 'אופציות לסוציומטרי'"):
                     options_button = WebDriverWait(driver, 100).until(
-                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                      EC.element_to_be_clickable((By.XPATH, button["xpath"]))
         )
                     driver.execute_script("arguments[0].scrollIntoView();", options_button)
                     options_button.click()
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
 
-                    with allure.step("לחיצה על 'שמור' וחזרה"):
-                       with allure.step("לחיצה על 'שמור' וחזרה"):
-                        save_button = WebDriverWait(driver, 100).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שמור')]"))
+                with allure.step("לחיצה על 'שמור' וחזרה"):
+                
+                    save_button = WebDriverWait(driver, 100).until(
+                      EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שמור')]"))
     )
-                        save_button.click()
+                    save_button.click()
 
     # הודעת ויזואלית מדליקה – לא נוגע 😎
-                        driver.execute_script("""
+                    driver.execute_script("""
         var message = document.createElement('div');
         message.innerText = '✅ לחצתי על שמור!';
         message.style.position = 'fixed';
@@ -237,14 +237,14 @@ def test_survey_buttons(driver):
     """)
 
     # חזרה אחורה וממתין שנטען שוב דף קודם
-                        driver.back()
-                        WebDriverWait(driver, 10).until(
+                    driver.back()
+                    WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'שמור')]"))  # או כל אלמנט שמבטיח שהדף הקודם נטען
     )
 
-                       passed += 1
-                       driver.back()
-                       WebDriverWait(driver, 10).until(
+                    passed += 1
+                    driver.back()
+                    WebDriverWait(driver, 10).until(
                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))  # דואג שהחזרה הושלמה
 )
 
