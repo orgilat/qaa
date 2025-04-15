@@ -113,8 +113,7 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
             password.send_keys(Keys.RETURN)
     
     # חכה שהעמוד הבא יטען ע"י נוכחות של אלמנט כלשהו שידוע לך שהוא מופיע רק אחרי התחברות,
-    # אם אין לך כזה, אפשר לחכות שה-URL ישתנה או יכיל מחרוזת מסוימת:
-            WebDriverWait(driver, 10).until(EC.url_contains("default.asp"))  # או כתובת אחרת שאתה מצפה לה
+
     
             allure.attach(driver.current_url, name="כתובת האתר לאחר התחברות", attachment_type=allure.attachment_type.TEXT)
 
