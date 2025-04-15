@@ -168,28 +168,39 @@ def test_survey_buttons(driver):
                 WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[2]["xpath"])))  # חזרה לניהול סוציומטרי
                 passed += 1
             elif button["name"] == "חוקים על שאלות":
-                with allure.step("בדיקות פנימיות עבור 'חוקים על שאלות'"):
+               with allure.step("בדיקות פנימיות עבור 'חוקים על שאלות'"):
+                  try:
                     with allure.step("כניסה למסך 'חוקים על שאלות'"):
-                      element = WebDriverWait(driver, 100).until(
-                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-            )
-                      element.click()
-                    with allure.step("הקלדה בתיבת החיפוש בתוך 'חוקים על שאלות'"):
-                        search_input = WebDriverWait(driver, 100).until(
-                          EC.visibility_of_element_located((By.ID, "dt-search-0"))
-            )
-                        search_input.clear()
-                        search_input.send_keys("שי אגיב שי אגיב")
-                        passed += 1
-                    with allure.step("לחיצה על 'שאלון סוציומטרי' בתוך 'חוקים על שאלות'"):
-                        combo = WebDriverWait(driver, 100).until(
-                          EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.ss-arrow"))
-            )
-                        combo.click()
-                        passed += 1
+                     element = WebDriverWait(driver, 100).until(
+                     EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                )
+                     element.click()
 
-                        driver.back()
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))  # חזרה
+                    with allure.step("הקלדה בתיבת החיפוש בתוך 'חוקים על שאלות'"):
+                     search_input = WebDriverWait(driver, 100).until(
+                     EC.visibility_of_element_located((By.ID, "dt-search-0"))
+                )
+                     search_input.clear()
+                     search_input.send_keys("שי אגיב שי אגיב")
+                     passed += 1
+
+                    with allure.step("לחיצה על 'שאלון סוציומטרי' בתוך 'חוקים על שאלות'"):
+                     combo = WebDriverWait(driver, 100).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.ss-arrow"))
+                )
+                    combo.click()
+                    passed += 1
+
+                    driver.back()
+                    WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                )  # חזרה אחורה
+
+                  except TimeoutException as e:
+                        failed += 1
+                        allure.attach(driver.get_screenshot_as_png(), name="❌ חוקים על שאלות - שגיאה", attachment_type=allure.attachment_type.PNG)
+                        allure.attach(f"<b style='color:red;'>שגיאה בחוקים על שאלות:</b><br><pre>{e}</pre>",
+                          name="שגיאה", attachment_type=allure.attachment_type.HTML)
 
                     
             elif button["name"] == "כללי השתתפות לפי סוג יחידה":
