@@ -2,7 +2,9 @@ import pytest
 import allure
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -12,8 +14,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.chrome.service import Service
 import time
-import shutil  # נוסיף לבדיקה האם chromedriver קיים
-
+import shutil
+  # נוסיף לבדיקה האם chromedriver קיים
+driver = webdriver.Chrome()
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
 
@@ -36,6 +39,7 @@ def driver():
     _driver.quit()
 
 
+
 @allure.feature("ניהול סקרים")
 @allure.story("בדיקת לחצנים באתר תמורות")
 @allure.severity(allure.severity_level.CRITICAL)
@@ -52,6 +56,7 @@ def driver():
     </ul>
 """)
 def test_survey_buttons(driver):
+    
     global passed, failed
     passed, failed = 0, 0  # איפוס משתני הצלחה/כישלון
 
@@ -152,6 +157,7 @@ def test_survey_buttons(driver):
             allure.attach(driver.current_url, name="כתובת האתר לאחר המעבר", attachment_type=allure.attachment_type.TEXT)
 
     except Exception as e:
+     
      allure.attach(f"שגיאה במהלך הבדיקה: {e}", name="Error Info", attachment_type=allure.attachment_type.TEXT)
      for button in buttons[23:]:
        if button["name"] == "ניהול אירועים":
@@ -267,7 +273,6 @@ def test_survey_buttons(driver):
 
 with allure.step("לחיצה על ניהול פוטנציאל"):
     try:
-        # ודא שה-driver הוא מופע של WebDriver לפני השימוש
         manage_potential_tab = WebDriverWait(driver, 100).until(
             EC.element_to_be_clickable((
                 By.XPATH,
@@ -279,6 +284,7 @@ with allure.step("לחיצה על ניהול פוטנציאל"):
     except TimeoutException:
         print("❌ לא נמצא כפתור ניהול פוטנציאל")
         failed += 1
+
 
 with allure.step("חשב פוטנציאל מחדש"):
     try:
