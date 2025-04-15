@@ -90,11 +90,13 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
         """
         בודקת אם יש חלון Alert פתוח, ואם כן, סוגרת אותו.
         """
-        try:
-            alert = Alert(driver)
-            alert.accept()
-            allure.attach("חלון Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
-        except Exception as e:
+    try:
+         WebDriverWait(driver, 10).until(EC.alert_is_present())
+         alert = Alert(driver)
+         alert.accept()
+         allure.attach("חלון Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
+    except Exception as e:
+      
             allure.attach(f"הודעת Alert לא נמצאה: {e}", name="Alert Info", attachment_type=allure.attachment_type.TEXT)
 
     try:
