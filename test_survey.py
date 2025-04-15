@@ -37,7 +37,6 @@ def driver():
 
 
 
-
 @allure.feature("ניהול סקרים")
 @allure.story("בדיקת לחצנים באתר תמורות")
 @allure.severity(allure.severity_level.CRITICAL)
@@ -53,10 +52,9 @@ def driver():
       <li>תיעוד מפורט של כל שלב בדוח Allure.</li>
     </ul>
 """)
-def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
-    passed = 0  # ספירת הצלחות
-    failed = 0  # ספירת כישלונות
- 
+def test_survey_buttons(driver):
+    passed = 0
+    failed = 0
 
     # רשימת הכפתורים במסך ניהול סוציומטרי
     buttons = [
@@ -71,7 +69,7 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
         {"name": "אופציות לסוציומטרי", "xpath": "//input[contains(@value, 'אופציות לסוציומטרי')]"},
         {"name": "הגדרה וניהול סטטוסים לאירועים", "xpath": "//input[contains(@value, 'הגדרה וניהול סטטוסים לאירועים')]"},
         {"name": "סיבות להוספת או הסרת משתתפים באירוע", "xpath": "//input[contains(@value, 'סיבות להוספת או הסרת משתתפים באירוע')]"},
-        {"name": "הגדרת כללי חריגות בגין מידת היכרות", "xpath": "//input[contains(@value, 'הגדרת שאלונים בהם מותר למחוק נתונים')]"},  # עדכון XPath לפי הצורך
+        {"name": "הגדרת כללי חריגות בגין מידת היכרות", "xpath": "//input[contains(@value, 'הגדרת שאלונים בהם מותר למחוק נתונים')]"},
         {"name": "רשימת אשכולות לאיגוד קבוצות של היגדים", "xpath": "//input[contains(@value, 'רשימת אשכולות לאיגוד קבוצות של היגדים')]"},
         {"name": "העברת משיבים ממאגר", "xpath": "//input[contains(@value, 'העברת משיבים ממאגר')]"},
         {"name": "ניהול הרשאות משתמשים", "xpath": "//input[contains(@value, 'ניהול הרשאות משתמשים')]"},
@@ -83,56 +81,58 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
         {"name": "ייצוא דוחות אישיים", "xpath": "//input[contains(@value, 'ייצוא דוחות אישיים')]"},
         {"name": "שיוך יחידות לאשכול", "xpath": "//input[contains(@value, 'שיוך יחידות לאשכול')]"},
         {"name": "פלט אישי בתיקיית עובד", "xpath": "//input[contains(@value, 'פלט אישי בתיקיית עובד')]"},
-         {"name": "ניהול אירועים", "xpath": "//input[contains(@value, 'ניהול אירועים')]"},
+        {"name": "ניהול אירועים", "xpath": "//input[contains(@value, 'ניהול אירועים')]"},
     ]
 
     def close_alert_if_present():
-        """
-        בודקת אם יש חלון Alert פתוח, ואם כן, סוגרת אותו.
-        """
-    try:
-        WebDriverWait(driver, 20).until(EC.alert_is_present())  # מחכה שה-Alert יופיע
-        alert = Alert(driver)
-        alert.accept()  # קבלת ה-alert ולחיצה על "OK"
-        allure.attach("חלון Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
-    except Exception as e:
-        # טיפול בשגיאות כלליות אם לא נמצא alert
-        allure.attach(f"הודעת Alert לא נמצאה או שגיאה אחרת: {e}", name="Alert Info", attachment_type=allure.attachment_type.TEXT)
-  
+        try:
+            WebDriverWait(driver, 20).until(EC.alert_is_present())  # מחכה שה-Alert יופיע
+            alert = Alert(driver)
+            alert.accept()  # קבלת ה-alert ולחיצה על "OK"
+            allure.attach("חלון Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
+        except Exception as e:
+            allure.attach(f"הודעת Alert לא נמצאה או שגיאה אחרת: {e}", name="Alert Info", attachment_type=allure.attachment_type.TEXT)
+
     try:
         with allure.step("פתיחת האתר והתחברות"):
             driver.get("https://www.survey.co.il/pms/MMDANEW/default.asp")
-            time.sleep(3.5)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "login")))
             username = driver.find_element(By.NAME, "login")
             password = driver.find_element(By.NAME, "password")
             username.send_keys("MARINAS")
             password.send_keys("Ms123456")
             password.send_keys(Keys.RETURN)
-            time.sleep(3.5)
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, "//button[contains(text(),'Logout')]")))
             allure.attach(driver.current_url, name="כתובת האתר לאחר התחברות", attachment_type=allure.attachment_type.TEXT)
 
         with allure.step("מעבר למסך ניהול סוציומטרי"):
-                    close_alert_if_present()
+            close_alert_if_present()
 
-        # חכה להופעת כפתור 'ניהול סקרים'
-        manage_survey_button = WebDriverWait(driver, 100).until(
-            EC.presence_of_element_located((By.XPATH, buttons[0]["xpath"]))
-        )
-        actions = ActionChains(driver)
-        actions.move_to_element(manage_survey_button).perform()
+            # חכה להופעת כפתור 'ניהול סקרים'
+            manage_survey_button = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, buttons[0]["xpath"]))
+            )
+            actions = ActionChains(driver)
+            actions.move_to_element(manage_survey_button).perform()
 
-        # במקום time.sleep(0.5), השתמש ב-WebDriverWait כאן אם הכפתור כבר מוצג
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"])))
-        
-        close_alert_if_present()
-        soc_button = WebDriverWait(driver, 100).until(
-            EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"]))
-        )
-        soc_button.click()
+            # במקום time.sleep(0.5), השתמש ב-WebDriverWait כאן אם הכפתור כבר מוצג
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"])))
 
-        # חכה להופעת כתובת האתר החדשה אחרי הלחיצה
-        WebDriverWait(driver, 10).until(EC.url_contains("pms/MMDANEW/default.asp"))
-        allure.attach(driver.current_url, name="כתובת האתר במסך סוציומטרי", attachment_type=allure.attachment_type.TEXT)
+            close_alert_if_present()
+            soc_button = WebDriverWait(driver, 100).until(
+                EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"]))
+            )
+            soc_button.click()
+
+            # חכה להופעת כתובת האתר החדשה אחרי הלחיצה או אלמנט אחר שזמין רק אחרי הלחיצה
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'סוציומטרי')]")))
+
+            allure.attach(driver.current_url, name="כתובת האתר לאחר המעבר", attachment_type=allure.attachment_type.TEXT)
+
+    except Exception as e:
+        allure.attach(f"שגיאה במהלך הבדיקה: {e}", name="Error Info", attachment_type=allure.attachment_type.TEXT)
+
+
 
         # מעבר על שאר הכפתורים במסך ניהול סוציומטרי
         for button in buttons[2:22]:
