@@ -138,11 +138,21 @@ def test_survey_buttons(driver):
         for button in buttons[2:22]:
             if button["name"] == "עונות":
                 with allure.step("בדיקות פנימיות עבור 'עונות'"):
-                    close_alert_if_present()
+                    xpath = button["xpath"]
 
-                    seasons_button = WebDriverWait(driver, 100).until(
-                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-    )
+        # מוודא שהאלמנט מופיע ונראה
+                    seasons_button = WebDriverWait(driver, 30).until(
+                    EC.visibility_of_element_located((By.XPATH, xpath))
+        )
+
+        # מביא את האלמנט למרכז המסך (חשוב בעיקר ב־headless)
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", seasons_button)
+                    time.sleep(0.3)
+
+        # מוודא שהוא גם קליקבּל
+                    WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, xpath))
+        )
                     seasons_button.click()
                     with allure.step("לחיצה על 'שאלות חובה לסוציומטרי' וחזרה"):
                        mandatory_btn = WebDriverWait(driver, 100).until(
