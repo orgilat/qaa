@@ -16,8 +16,7 @@ import shutil  # נוסיף לבדיקה האם chromedriver קיים
 
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
-passed = 0
-failed = 0
+
 
 # 🧪 Pytest Fixture שפותחת וסוגרת דפדפן אוטומטית
 @pytest.fixture(scope="function")
@@ -53,7 +52,10 @@ def driver():
     </ul>
 """)
 def test_survey_buttons(driver):
-    passed, failed = 0, 0
+    global passed, failed
+    passed, failed = 0, 0  # איפוס משתני הצלחה/כישלון
+
+    # המשך הקוד התקני כאן...
 
     try:
         buttons = [
