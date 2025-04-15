@@ -16,6 +16,9 @@ import shutil  # נוסיף לבדיקה האם chromedriver קיים
 
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
+passed = 0
+failed = 0
+
 
 # 🧪 Pytest Fixture שפותחת וסוגרת דפדפן אוטומטית
 @pytest.fixture(scope="function")
@@ -136,14 +139,40 @@ def test_survey_buttons(driver):
 
           
   
-    finally:
-        time.sleep(3.5)
-        driver.execute_script("new Audio('https://www.soundjay.com/button/beep-07.wav').play();")
-        driver.execute_script("""
-                              var message = document.createElement('div');
-                              message.innerText = 'סיימנו את השלב הראשון- כעת נעבור לשלב השני!';
-                              message.style.position = 'fixed';
-         message.style.top = '120px';
+try:
+    buttons = [
+        {"name": "ניהול הסקר", "xpath": "//a[contains(text(), 'ניהול הסקר')]"},
+        {"name": "ניהול סוציומטרי", "xpath": "//a[contains(text(), 'ניהול סוציומטרי')]"},
+        {"name": "עונות", "xpath": "//input[contains(@value, 'עונות')]"},
+        {"name": "שאלות חובה", "xpath": "//input[contains(@value, 'שאלות חובה')]"},
+        {"name": "חוקים לבדיקת שאלונים חריגים", "xpath": "//input[contains(@value, 'חוקים לבדיקת שאלונים חריגים')]"},
+        {"name": "חוקים על שאלות", "xpath": "//input[contains(@value, 'חוקים על שאלות')]"},
+        {"name": "כללי השתתפות לפי סוג יחידה", "xpath": "//input[contains(@value, 'כללי השתתפות לפי סוג יחידה')]"},
+        {"name": "הגדרת השדות שיופיעו בטבלאות", "xpath": "//input[contains(@value, 'הגדרת השדות שיופיעו בטבלאות')]"},
+        {"name": "אופציות לסוציומטרי", "xpath": "//input[contains(@value, 'אופציות לסוציומטרי')]"},
+        {"name": "הגדרה וניהול סטטוסים לאירועים", "xpath": "//input[contains(@value, 'הגדרה וניהול סטטוסים לאירועים')]"},
+        {"name": "סיבות להוספת או הסרת משתתפים באירוע", "xpath": "//input[contains(@value, 'סיבות להוספת או הסרת משתתפים באירוע')]"},
+        {"name": "הגדרת כללי חריגות בגין מידת היכרות", "xpath": "//input[contains(@value, 'הגדרת שאלונים בהם מותר למחוק נתונים')]"},
+        {"name": "רשימת אשכולות לאיגוד קבוצות של היגדים", "xpath": "//input[contains(@value, 'רשימת אשכולות לאיגוד קבוצות של היגדים')]"},
+        {"name": "העברת משיבים ממאגר", "xpath": "//input[contains(@value, 'העברת משיבים ממאגר')]"},
+        {"name": "ניהול הרשאות משתמשים", "xpath": "//input[contains(@value, 'ניהול הרשאות משתמשים')]"},
+        {"name": "של פוטנציאל המשתתפים בסוציומטרי", "xpath": "//input[contains(@value, 'של פוטנציאל המשתתפים בסוציומטרי')]"},
+        {"name": "הגדרת חוקי העתקה של נתונים מחושבים לשאלון העזר", "xpath": "//input[contains(@value, 'הגדרת חוקי העתקה של נתונים מחושבים לשאלון העזר')]"},
+        {"name": "הגדרת כללים לחוקות חישוב", "xpath": "//input[contains(@value, 'הגדרת כללים לחוקות חישוב')]"},
+        {"name": "עריכה שדות במאגר המשיבים", "xpath": "//input[contains(@value, 'עריכה שדות במאגר המשיבים')]"},
+        {"name": "הגדרת שאלונים בהם מותר למחוק נתונים", "xpath": "//input[contains(@value, 'הגדרת שאלונים בהם מותר למחוק נתונים')]"},
+        {"name": "ייצוא דוחות אישיים", "xpath": "//input[contains(@value, 'ייצוא דוחות אישיים')]"},
+        {"name": "שיוך יחידות לאשכול", "xpath": "//input[contains(@value, 'שיוך יחידות לאשכול')]"},
+        {"name": "פלט אישי בתיקיית עובד", "xpath": "//input[contains(@value, 'פלט אישי בתיקיית עובד')]"},
+        {"name": "ניהול אירועים", "xpath": "//input[contains(@value, 'ניהול אירועים')]"},
+    ]
+    time.sleep(3.5)
+    driver.execute_script("new Audio('https://www.soundjay.com/button/beep-07.wav').play();")
+    driver.execute_script("""
+        var message = document.createElement('div');
+        message.innerText = 'סיימנו את השלב הראשון- כעת נעבור לשלב השני!';
+        message.style.position = 'fixed';
+        message.style.top = '120px';
         message.style.right = '120px';
         message.style.backgroundColor = 'green';
         message.style.color = 'white';
@@ -152,349 +181,252 @@ def test_survey_buttons(driver):
         message.style.zIndex = '9999';
         message.style.fontSize = '20px';
         document.body.appendChild(message);
-        setTimeout(function(){ message.remove(); }, 100000); // ההודעה תיעלם אחרי 3 שניות
-    """) 
-        time.sleep(3.5)  
-      
+        setTimeout(function(){ message.remove(); }, 100000);
+    """)
+    time.sleep(3.5)
+
     for button in buttons[23:]:
-      if button["name"] == "ניהול אירועים":
-        with allure.step("בדיקות פנימיות עבור 'ניהול אירועים'"):
-            close_alert_if_present()
-            events_button = WebDriverWait(driver, 100).until(
-                EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-            )
-            events_button.click()
-            time.sleep(0.5)
-            passed += 1
-        with allure.step("לחיצה על 'להקמת אירוע חדש'"):
-            # שים לב: השתמשנו בשם "add_event_button" באופן עקבי
-            add_event_button = WebDriverWait(driver, 100).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[normalize-space(.//span[contains(@class, 'block')])='להקמת אירוע חדש']"))
-            )
-            driver.execute_script("arguments[0].scrollIntoView(true);", add_event_button)
-            time.sleep(1)
-            add_event_button.click()
-            time.sleep(25)
-            passed += 1
-        with allure.step("מילוי שם האירוע ב-'מאי הגיי'"):
-            # המתן עד שהשדה "שם האירוע" יהיה זמין (המסך החדש נטען)
-            event_name_input = WebDriverWait(driver, 20).until(
-                EC.visibility_of_element_located((By.XPATH, "//div[@class='field floating-label' and @label='שם האירוע']//input"))
-            )
-            # עכשיו המלא את השדה עם הטקסט "אירוע לדוגמה"
-            event_name_input.send_keys("אירוע לדוגמה ")
-            time.sleep(5.5)  # הוספת זמן המתנה לוודא שהטקסט נכתב
-            passed += 1
+        if button["name"] == "ניהול אירועים":
+            with allure.step("בדיקות פנימיות עבור 'ניהול אירועים'"):
+                events_button = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                )
+                events_button.click()
+                time.sleep(0.5)
+                passed += 1
 
-        with allure.step("בחירת עונת הערכה"):
-            # המתן עד שהכפתור של Dropdown יהיה לחיץ
-            dropdown_button = WebDriverWait(driver, 100).until(
-                EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown dropdown-select' and @label='בחר עונת הערכה']//div[contains(@class, 'dropdown-btn')]"))
-            )
-            dropdown_button.click()
-            time.sleep(3)  # המתן להופעת רשימת הבחירה
-           
+            with allure.step("לחיצה על 'להקמת אירוע חדש'"):
+                add_event_button = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[normalize-space(.//span[contains(@class, 'block')])='להקמת אירוע חדש']"))
+                )
+                driver.execute_script("arguments[0].scrollIntoView(true);", add_event_button)
+                time.sleep(1)
+                add_event_button.click()
+                time.sleep(25)
+                passed += 1
 
-            # בחר באפשרות "עונת 1"
-            season_option = WebDriverWait(driver, 100).until(
-                EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-list']//li//div[@class='list-item']/span[text()='עונת 1']"))
-            )
-            season_option.click()
-            passed += 1
-            time.sleep(3)
-          
+            with allure.step("מילוי שם האירוע ב-'מאי הגיי'"):
+                event_name_input = WebDriverWait(driver, 20).until(
+                    EC.visibility_of_element_located((By.XPATH, "//div[@class='field floating-label' and @label='שם האירוע']//input"))
+                )
+                event_name_input.send_keys("אירוע לדוגמה ")
+                time.sleep(5.5)
+                passed += 1
 
-        with allure.step("בחירת תאריך 18"):
-    # המתן עד שכפתור לוח השנה יהיה לחיץ
-          calendar_button = WebDriverWait(driver, 100).until(
-          EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']"))
-    )
-          calendar_button.click()
-          passed += 1
-          time.sleep(1)  # המתן להופעת לוח השנה
-
-    # לחץ על התאריך 18
-          date_18 = WebDriverWait(driver, 100).until(
-          EC.element_to_be_clickable((By.XPATH, "//td[contains(@class, 'dx-calendar-cell') and not(contains(@class, 'dx-calendar-other-view'))]//span[text()='18']"))
-    )
-          date_18.click()
-          passed += 1
-          time.sleep(2)
-        
-
-        with allure.step("בחירת תאריך 26 בתאריך סיום"):
-    # המתן עד שכפתור פתיחת לוח השנה יהיה לחיץ – שימו לב למבנה הקלסים
-         calendar_button = WebDriverWait(driver, 100).until(  # הגדלתי את זמן ההמתנה
-         EC.element_to_be_clickable(
-            (By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']")
-        )
-    )
-         calendar_button.click()
-         passed += 1
-
-    # המתן עד שהכפתור עם הערך "2" יהיה לחיץ ולחץ עליו
-        date_input = WebDriverWait(driver, 100).until(
-         EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//input[@type='text']"))
-    )
-        date_input.send_keys("18-03-2025" + Keys.ENTER)
-        passed += 1
-        time.sleep(6)  # ש
-   
-
-    with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
-    # המתן עד שכפתור ה-dropdown יהיה לחיץ בתוך התיבה עם התווית "הגדרת סוג היחידה לאירוע"
-     unit_dropdown_button = WebDriverWait(driver, 100).until(  # הגדלתי את זמן ההמתנה
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]")
-        )
-    )
-     unit_dropdown_button.click()
-
-    # המתן עד להופעת רשימת הבחירה ובחר באפשרות "מטה"
-     unit_option_mathe = WebDriverWait(driver, 100).until(  # הגדלתי את זמן ההמתנה
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[@class='dropdown-list']//li//div[contains(@class, 'list-item')]//span[normalize-space(text())='מטה']")
-        )
-    )
-     unit_option_mathe.click()
-     passed += 2
-     time.sleep(3)
-
-
-
-
-     
-  
-     with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
-      checkbox_pikud2 = WebDriverWait(driver, 100).until(  # הגדלתי את זמן ההמתנה
-        EC.element_to_be_clickable(
-            (By.XPATH, "//li[@data-item-id='249']//div[contains(@class, 'dx-checkbox-container')]")
-        )
-    )
-     checkbox_pikud2.click()
-     passed += 1
-    time.sleep(11)
-
-
-
-
-
-
-    with allure.step("Selecting the checkbox for 'אוגדה 1' under 'Selecting units to display fill report'"):
-    # Locate the section header first
-      section_header = WebDriverWait(driver, 100).until(
-        EC.presence_of_element_located(
-            (By.XPATH, "//div[normalize-space()='בחירת יחידות מאגדות להצגת דוח מילוי']")
-        )
-    )
-    # Then, locate the first <li> with aria-label 'אוגדה 1' (and level 2) following the header,
-    # and within it, find its checkbox element (the square to the right).
-      checkbox = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((
-            By.XPATH,
-            "//div[normalize-space()='בחירת יחידות מאגדות להצגת דוח מילוי']"
-            "/following::li[@aria-label='אוגדה 1' and @aria-level='2'][1]"
-            "//div[contains(@class, 'dx-checkbox')]"
-        ))
-    )
-    checkbox.click()
-    passed += 1
-    time.sleep(1.2)
-
-
-
-
-
-    with allure.step("Scrolling to the bottom of the page"):
-    # Scroll to the bottom of the page using JavaScript
-     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-     time.sleep(1.1)  # Brief pause to allow any lazy-loaded elements to appear
-
-    with allure.step("Selecting 'Originality and Innovation' and 'Planning Ability' checkboxes via label click"):
-    # Click on the label for "Originality and Innovation" to select its checkbox
-     label_originality = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.XPATH, "//label[normalize-space()='מקוריות וחדשנות']"))
-    )
-     label_originality.click()
-     passed += 1
-     time.sleep(5)
-
-    # Click on the label for "Planning Ability" to select its checkbox
-    label_planning = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.XPATH, "//label[normalize-space()='יכולת תכנון']"))
-    )
-    label_planning.click()
-    passed += 1
-    time.sleep(1.2)
-
-    with allure.step("Scrolling to the top of the page"):
-    # Scroll to the top using JavaScript
-     driver.execute_script("window.scrollTo(0, 0);")
-     time.sleep(2.2)  # Pause to allow any page adjustments
-
-    with allure.step("Clicking on the 'ניהול פוטנציאל' (Manage Potential) tab"):
-     manage_potential_tab = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//a[.//div[contains(@class, 'q-tab__label') and normalize-space(text())='ניהול פוטנציאל']]")
-        )
-    )
-     manage_potential_tab.click()
-     passed += 1
-
-    with allure.step("Clicking on the 'הצג פוטנציאל' button using JavaScript"):
-    # Locate the button using its text
-      button_recalculate = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'חשב פוטנציאל מחדש')]"))
-    )
-    button_recalculate.click()
-    
-    # המתן להיעלמות הלודר או להופעת תוצאה חדשה
-    WebDriverWait(driver, 100).until_not(
-        EC.presence_of_element_located((By.CSS_SELECTOR, ".q-loading"))
-    )
-
-    with allure.step("Clicking on the 'הצג פוטנציאל' button using JavaScript"):
-    # Locate the button using its text
-     button_show = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'הצג פוטנציאל')]"))
-    )
-     button_show.click()
-
-    # המתן להופעת טבלת התוצאות או רכיב מייצג אחר
-     WebDriverWait(driver, 100).until(
-        EC.presence_of_element_located(
-            (By.XPATH, "//div[contains(@class, 'dx-datagrid-rowsview')]//table")
-        )
-    )
-
-
-    with allure.step("Click leftmost dropdown button"):
-    # Find all dropdown buttons
-     dropdown_buttons = WebDriverWait(driver, 100).until(
-        EC.presence_of_all_elements_located(
-            (By.XPATH, "//div[@class='dx-widget dx-button-mode-contained dx-button-normal dx-rtl dx-dropdowneditor-button']")
-        )
-    )
-    
-    # Sort buttons by x-location (leftmost first)
-     leftmost_button = sorted(dropdown_buttons, key=lambda el: el.location['x'])[0]
-
-    # Click the leftmost button
-     leftmost_button.click()
-     option_no = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[@role='option' and .//div[text()='לא']]")
-        )
-    )
-     option_no.click()
-     time.sleep(0.5)
-
-
-
-    with allure.step("Loop through empty checkboxes and process them"):
-     for _ in range(100):  # ננסה עד 100 מחזורים
-        # מציאת כל הצ'קבוקסים הריקים
-        checkboxes = WebDriverWait(driver, 100).until(
-            EC.presence_of_all_elements_located(
-                (By.XPATH, "//td[@role='gridcell']//div[@role='checkbox' and @aria-checked='false']")
-            )
-        )
-        for checkbox in checkboxes:
-            try:
-                # גלילה לצ'קבוקס כדי לוודא שהוא נגיש
-                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                time.sleep(0.3)
-
-                with allure.step("Click empty checkbox"):
-                    checkbox.click()
-                    time.sleep(0.3)  # זמן קצר יותר כי המערכת מגיבה מהר בלחיצה
-
-                with allure.step("Click the dropdown button"):
-                 WebDriverWait(driver, 10).until_not(
-                  EC.presence_of_element_located((
-                    By.XPATH,
-            "//div[contains(@class, 'dx-overlay-wrapper') and contains(@class, 'dx-loadpanel-wrapper')]"
-        ))
-    )
-
-    # רק אחרי שהשכבה נעלמה - לחץ על ה-dropdown
+            with allure.step("בחירת עונת הערכה"):
                 dropdown_button = WebDriverWait(driver, 100).until(
-                  EC.element_to_be_clickable(
-                    (By.XPATH, "//div[@class='dropdown-btn text-box valid populated']")
-        )
-    )
+                    EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown dropdown-select' and @label='בחר עונת הערכה']//div[contains(@class, 'dropdown-btn')]"))
+                )
                 dropdown_button.click()
-                time.sleep(0.2)  # זמן קצר יותר לפתיחת ה-dropdown
+                time.sleep(3)
 
+                season_option = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-list']//li//div[@class='list-item']/span[text()='עונת 1']"))
+                )
+                season_option.click()
+                passed += 1
+                time.sleep(3)
 
-                with allure.step("Select 'המוערך נוסף על פי בקשתו' option"):
-                 option_to_select = WebDriverWait(driver, 100).until(
-                  EC.element_to_be_clickable(
-                   (By.XPATH, "//div[@class='list-item']/span[text()='המוערך נוסף על פי בקשתו']")
-        )
-    )
-                option_to_select.click()
+            with allure.step("בחירת תאריך 18"):
+                calendar_button = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']"))
+                )
+                calendar_button.click()
+                passed += 1
+                time.sleep(1)
+
+                date_18 = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//td[contains(@class, 'dx-calendar-cell') and not(contains(@class, 'dx-calendar-other-view'))]//span[text()='18']"))
+                )
+                date_18.click()
+                passed += 1
+                time.sleep(2)
+
+            with allure.step("בחירת תאריך 26 בתאריך סיום"):
+                calendar_button = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']"))
+                )
+                calendar_button.click()
+                passed += 1
+
+                date_input = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//input[@type='text']"))
+                )
+                date_input.send_keys("18-03-2025" + Keys.ENTER)
+                passed += 1
+                time.sleep(6)
+
+            with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
+                unit_dropdown_button = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]"))
+                )
+                unit_dropdown_button.click()
+
+                unit_option_mathe = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-list']//li//div[contains(@class, 'list-item')]//span[normalize-space(text())='מטה']"))
+                )
+                unit_option_mathe.click()
+                passed += 2
+                time.sleep(3)
+
+            with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
+                checkbox_pikud2 = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//li[@data-item-id='249']//div[contains(@class, 'dx-checkbox-container')]"))
+                )
+                checkbox_pikud2.click()
+                passed += 1
+                time.sleep(11)
+
+            with allure.step("בחירת 'אוגדה 1' להצגת דוח מילוי"):
+                section_header = WebDriverWait(driver, 100).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[normalize-space()='בחירת יחידות מאגדות להצגת דוח מילוי']"))
+                )
+
+                checkbox = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[normalize-space()='בחירת יחידות מאגדות להצגת דוח מילוי']/following::li[@aria-label='אוגדה 1' and @aria-level='2'][1]//div[contains(@class, 'dx-checkbox')]"))
+                )
+                checkbox.click()
+                passed += 1
+                time.sleep(1.2)
+
+            with allure.step("גלילה לתחתית העמוד"):
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(1.1)
+
+            with allure.step("סימון מקוריות ויכולת תכנון"):
+                label_originality = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//label[normalize-space()='מקוריות וחדשנות']"))
+                )
+                label_originality.click()
+                passed += 1
+                time.sleep(5)
+
+                label_planning = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//label[normalize-space()='יכולת תכנון']"))
+                )
+                label_planning.click()
+                passed += 1
+                time.sleep(1.2)
+
+            with allure.step("גלילה לראש העמוד"):
+                driver.execute_script("window.scrollTo(0, 0);")
+                time.sleep(2.2)
+
+            with allure.step("לחיצה על ניהול פוטנציאל"):
+                manage_potential_tab = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//a[.//div[contains(@class, 'q-tab__label') and normalize-space(text())='ניהול פוטנציאל']]"))
+                )
+                manage_potential_tab.click()
+                passed += 1
+
+            with allure.step("חשב פוטנציאל מחדש"):
+                button_recalculate = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'חשב פוטנציאל מחדש')]"))
+                )
+                button_recalculate.click()
+                WebDriverWait(driver, 100).until_not(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".q-loading"))
+                )
+
+            with allure.step("הצגת פוטנציאל"):
+                button_show = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'הצג פוטנציאל')]"))
+                )
+                button_show.click()
+                WebDriverWait(driver, 100).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'dx-datagrid-rowsview')]//table"))
+                )
+
+            with allure.step("בחירת 'לא' מהתפריט השמאלי ביותר"):
+                dropdown_buttons = WebDriverWait(driver, 100).until(
+                    EC.presence_of_all_elements_located((By.XPATH, "//div[@class='dx-widget dx-button-mode-contained dx-button-normal dx-rtl dx-dropdowneditor-button']"))
+                )
+                leftmost_button = sorted(dropdown_buttons, key=lambda el: el.location['x'])[0]
+                leftmost_button.click()
+                option_no = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[@role='option' and .//div[text()='לא']]"))
+                )
+                option_no.click()
+                time.sleep(0.5)
+
+            with allure.step("לולאת סימון צ'קבוקסים והגדרת אפשרות"):
+                for _ in range(100):
+                    checkboxes = WebDriverWait(driver, 100).until(
+                        EC.presence_of_all_elements_located((By.XPATH, "//td[@role='gridcell']//div[@role='checkbox' and @aria-checked='false']"))
+                    )
+                    for checkbox in checkboxes:
+                        try:
+                            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
+                            time.sleep(0.3)
+                            checkbox.click()
+                            time.sleep(0.3)
+
+                            WebDriverWait(driver, 10).until_not(
+                                EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'dx-overlay-wrapper') and contains(@class, 'dx-loadpanel-wrapper')]"))
+                            )
+
+                            dropdown_button = WebDriverWait(driver, 100).until(
+                                EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-btn text-box valid populated']"))
+                            )
+                            dropdown_button.click()
+                            time.sleep(0.2)
+
+                            option_to_select = WebDriverWait(driver, 100).until(
+                                EC.element_to_be_clickable((By.XPATH, "//div[@class='list-item']/span[text()='המוערך נוסף על פי בקשתו']"))
+                            )
+                            option_to_select.click()
+                            time.sleep(0.3)
+                            passed += 1
+                            driver.execute_script("window.scrollBy(0, 100);")
+                            time.sleep(0.5)
+
+                        except Exception as e:
+                            print(f"⚠️ Error processing checkbox: {e}")
+                            continue
+                    time.sleep(1)
+
+            with allure.step("סגירת חלון אם קיים"):
+                close_button = WebDriverWait(driver, 22).until(
+                    EC.element_to_be_clickable((By.XPATH, "//i[contains(@class, 'material-icons') and normalize-space()='close']"))
+                )
+                close_button.click()
+                passed += 1
+                time.sleep(2)
+
+            with allure.step("מעבר לטאב 'מודל הערכה'"):
+                manage_potential_tab1 = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//a[.//div[contains(@class, 'q-tab__label') and normalize-space(text())='מודל הערכה']]"))
+                )
+                manage_potential_tab1.click()
+                passed += 1
                 time.sleep(0.3)
-                passed += 1  # המתנה קצרה להשלמת הפעולה
 
-                # גלילה קטנה למטה כדי לחשוף את הצ'קבוקס הבא
-                driver.execute_script("window.scrollBy(0, 100);")
-                time.sleep(0.5)  # זמן מינימלי כדי לאפשר סנכרון
+            with allure.step("לחיצה על 'בחר מודל הערכה חדש'"):
+                select_model_button = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[.//span[normalize-space(text())='בחר מודל הערכה חדש']]"))
+                )
+                select_model_button.click()
+                passed += 1
+                time.sleep(0.5)
 
-            except Exception as e:
-                print(f"⚠️ Error processing checkbox: {e}")
-                continue
-
-        # רענון הרשימה אחרי כל מחזור
-        time.sleep(1)
-
-
-
-    with allure.step("Clicking on 'close' button if available"):
-     close_button = WebDriverWait(driver, 22).until(
-        EC.element_to_be_clickable((By.XPATH, "//i[contains(@class, 'material-icons') and normalize-space()='close']"))
-    )
-     close_button.click()
-     passed += 1
-     time.sleep(2)  # השהיה קצרה אחרי הלחיצה
+except Exception as e:
+    print(f"❌ ERROR: {e}")
 
 
 
-    with allure.step("Clicking on the 'מודל הערכה' (Evaluation Model) tab"):
-     manage_potential_tab1 = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//a[.//div[contains(@class, 'q-tab__label') and normalize-space(text())='מודל הערכה']]")
-        )
-    )
-     manage_potential_tab1.click()
-     passed += 1
-    time.sleep(0.3)  # השהיה קצרה אחרי הלחיצה
+with allure.step(f"Test Summary - Passed: {passed}, Failed: {failed}"):
+    assert failed == 0, f"Some tests failed. Passed: {passed}, Failed: {failed}"
 
+elapsed_time = round(time.time() - start_time, 2)  # חישוב זמן סופי
 
-    with allure.step("Clicking on the 'בחר מודל הערכה חדש' (Select New Evaluation Model) button"):
-     select_model_button = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//button[.//span[normalize-space(text())='בחר מודל הערכה חדש']]")
-        )
-    )
-     select_model_button.click()
-     passed += 1
-      # השהיה קצרה אחרי הלחיצה
- # השהיה קצרה אחרי הלחיצה
-
-
-    with allure.step(f"Test Summary - Passed: {passed}, Failed: {failed}"):
-     assert failed == 0, f"Some tests failed. Passed: {passed}, Failed: {failed}"
-
-    elapsed_time = round(time.time() - start_time, 2)  # חישוב זמן סופי
-    driver.execute_script(f"""
+driver.execute_script(f"""
     var message = document.createElement('div');
     message.innerHTML = '✅<strong> השלמנו אירוע!</strong><br><br>⏳ הזמן שלקח לאוטומציה הוא: <strong>{elapsed_time} שניות</strong>';
     message.style.position = 'fixed';
     message.style.top = '100%';
     message.style.left = '100%';
     message.style.transform = 'translate(-100%, -100%)';
-    message.style.backgroundColor = '#4CAF100';
+    message.style.backgroundColor = '#4CAF50';
     message.style.color = '#fff';
     message.style.padding = '20px';
     message.style.borderRadius = '100px';
@@ -508,9 +440,8 @@ def test_survey_buttons(driver):
     setTimeout(() => message.remove(), 100000);
 """)
 
-# השהיה לסיום התהליך
+# השהיה לסיום התהליך בצורה חלקה
 time.sleep(8)
-
 
 # להרצה דרך CMD:
 # cd C:\Users\User\Documents\sell
