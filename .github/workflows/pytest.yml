@@ -3,12 +3,10 @@ name: Run Pytest Tests and Generate Allure Report
 on:
   push:
     branches:
-      - main  # אתה יכול להשאיר את זה אם אתה רוצה להריץ את הבדיקות על main
-      - master  # אם גם אתה רוצה להריץ את הבדיקות על master
+      - main  # להריץ את הבדיקות רק כאשר יש שינוי ב-main
   pull_request:
     branches:
-      - main
-      - master  # אם תרצה להפעיל את הבדיקות גם כאשר יש pull request לשני הברנצים
+      - main  # להריץ את הבדיקות כאשר יש pull request ל-main
   workflow_dispatch:
 
 jobs:
@@ -26,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt  # מתקין את כל התלויות (כמו pytest ו-allure-pytest)
+          pip install -r requirements.txt
 
       - name: Install Allure
         run: |
@@ -34,11 +32,11 @@ jobs:
           sudo apt-get install -y default-jre
           curl -o allure-2.14.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.zip
           unzip allure-2.14.0.zip -d /opt
-          sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure  # התקנת allure כדי שנוכל להשתמש בו
+          sudo ln -s /opt/allure-2.14.0/bin/allure /usr/local/bin/allure
 
       - name: Run Pytest and generate allure results
         run: |
-          pytest --alluredir=allure-results  # הרץ את הבדיקות ושמור את התוצאות
+          pytest --alluredir=allure-results
 
       - name: List allure-results directory
         run: |
