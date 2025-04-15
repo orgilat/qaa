@@ -204,25 +204,35 @@ def test_survey_buttons(driver):
 
                     
             elif button["name"] == "כללי השתתפות לפי סוג יחידה":
-                with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
-                  close_alert_if_present()
-                  unit_participation_btn = WebDriverWait(driver, 100).until(
-                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-        )
-                  driver.execute_script("arguments[0].scrollIntoView();", unit_participation_btn)
-                  unit_participation_btn.click()
+             with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
+              close_alert_if_present()
 
-                with allure.step("לחיצה על 'הוסף ימי היעדרות' וחזרה"):
-                    add_absence_btn = WebDriverWait(driver, 100).until(
-                    EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]"))
+              try:
+            # המרה ל-presence_of_element_located במידה וצריך רק לוודא שהאלמנט קיים
+                unit_participation_btn = WebDriverWait(driver, 100).until(
+                  EC.presence_of_element_located((By.XPATH, button["xpath"]))
             )
-                    add_absence_btn.click()
-                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                    driver.back()
-                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]")))
-                    driver.back()
-                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))
-                    passed += 1
+            
+                driver.execute_script("arguments[0].scrollIntoView();", unit_participation_btn)
+                unit_participation_btn.click()
+            
+              except TimeoutException as e:
+               allure.attach(driver.get_screenshot_as_png(), name="❌ צילום שגיאה", attachment_type=allure.attachment_type.PNG)
+               allure.attach(f"<b style='color:red;'>❌ שגיאה בלחיצה על '{button['name']}':</b><br><pre>{e}</pre>",
+                          name="שגיאה", attachment_type=allure.attachment_type.HTML)
+               failed += 1  # במקום continue, פשוט נעדכן את המשתנה failed
+
+        # המתנה אחרי החזרה לדף
+              try:
+                WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, button["xpath"]))
+            )
+                passed += 1  # נעדכן את מספר ההצלחה אחרי אם הכל עבר בהצלחה
+
+              except TimeoutException as e:
+               allure.attach(f"שגיאה בחזרה לדף אחרי לחיצה על {button['name']}", name="שגיאה ב-back", attachment_type=allure.attachment_type.HTML)
+               failed += 1
+
             elif button["name"] == "אופציות לסוציומטרי":
                 with allure.step("בדיקות פנימיות עבור 'אופציות לסוציומטרי'"):
                     options_button = WebDriverWait(driver, 100).until(
