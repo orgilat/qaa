@@ -234,24 +234,40 @@ def test_survey_buttons(driver):
                failed += 1
 
             elif button["name"] == "אופציות לסוציומטרי":
-                with allure.step("בדיקות פנימיות עבור 'אופציות לסוציומטרי'"):
-                    options_button = WebDriverWait(driver, 100).until(
-                      EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-        )
-                    driver.execute_script("arguments[0].scrollIntoView();", options_button)
-                    options_button.click()
-                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                try:
+                  with allure.step("בדיקות פנימיות עבור 'אופציות לסוציומטרי'"):
+            # מוודא שהכפתור קיים וניתן ללחיצה
+                   options_button = WebDriverWait(driver, 30).until(
+                     EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+            )
+                  driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", options_button)
+                  time.sleep(1)  # המתנה קטנה כדי לוודא שה-scroll הסתיים
+                  options_button.click()
 
+            # מוודא שהדף נטען מחדש אחרי הלחיצה
+                  WebDriverWait(driver, 10).until(
+                   EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
 
-                with allure.step("לחיצה על 'שמור' וחזרה"):
-                
-                    save_button = WebDriverWait(driver, 100).until(
-                      EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שמור')]"))
-    )
-                    save_button.click()
+                  with allure.step("לחיצה על 'שמור' וחזרה"):
+                   save_button = WebDriverWait(driver, 30).until(
+                    EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שמור')]"))
+            )
+                  driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", save_button)
+                  time.sleep(1)
+                  save_button.click()
+
+            # ווידוא שהפעולה הושלמה
+                  WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+
+                except TimeoutException as e:
+                 allure.attach(driver.page_source, name="שגיאה באופציות סוציומטרי", attachment_type=allure.attachment_type.HTML)
+                 pytest.fail("הכפתור 'אופציות לסוציומטרי' או 'שמור' לא נמצא/לא היה לחיץ בזמן")
 
     # הודעת ויזואלית מדליקה – לא נוגע 😎
-                    driver.execute_script("""
+                driver.execute_script("""
         var message = document.createElement('div');
         message.innerText = '✅ לחצתי על שמור!';
         message.style.position = 'fixed';
@@ -268,15 +284,15 @@ def test_survey_buttons(driver):
     """)
 
     # חזרה אחורה וממתין שנטען שוב דף קודם
-                    driver.back()
-                    WebDriverWait(driver, 10).until(
+                driver.back()
+                WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'שמור')]"))  # או כל אלמנט שמבטיח שהדף הקודם נטען
     )
 
-                    passed += 1
-                    driver.back()
-                    WebDriverWait(driver, 10).until(
-                       EC.element_to_be_clickable((By.XPATH, button["xpath"]))  # דואג שהחזרה הושלמה
+                passed += 1
+                driver.back()
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))  # דואג שהחזרה הושלמה
 )
 
                         
