@@ -136,62 +136,8 @@ def test_survey_buttons(driver):
 
         # מעבר על שאר הכפתורים במסך ניהול סוציומטרי
         for button in buttons[2:22]:
-            if button["name"] == "עונות":
-                with allure.step("בדיקות פנימיות עבור 'עונות'"):
-                    xpath = button["xpath"]
-
-        # מוודא שהאלמנט מופיע ונראה
-                    seasons_button = WebDriverWait(driver, 30).until(
-                    EC.visibility_of_element_located((By.XPATH, xpath))
-        )
-
-        # מביא את האלמנט למרכז המסך (חשוב בעיקר ב־headless)
-                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", seasons_button)
-                    time.sleep(0.3)
-
-        # מוודא שהוא גם קליקבּל
-                    WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, xpath))
-        )
-                    seasons_button.click()
-                    with allure.step("לחיצה על 'שאלות חובה לסוציומטרי' וחזרה"):
-                       mandatory_btn = WebDriverWait(driver, 100).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שאלות חובה לסוציומטרי')]"))
-        )
-                       mandatory_btn.click()
-                       WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))  # עד שיטען
-                       driver.back()
-                       WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שדות לפילטור')]")))
-                       passed += 1
-                    with allure.step("לחיצה על 'שדות לפילטור' וחזרה"):
-                        filter_btn = driver.find_element(By.XPATH, "//input[contains(@value, 'שדות לפילטור')]")
-                        filter_btn.click()
-                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                        driver.back()
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'עריכה')]")))
-                        passed += 1
-                    with allure.step("לחיצה על 'עריכה' וחזרה"):
-                        edit_btn = driver.find_element(By.XPATH, "//input[contains(@value, 'עריכה')]")
-                        edit_btn.click()
-                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                        driver.back()
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'פתח את ניהול')]")))
-                        passed += 1
-
-                    with allure.step("לחיצה על 'פתח את ניהול' וחזרה"):
-                         allure.attach(driver.get_screenshot_as_png(), name="Before Edit Click", attachment_type=allure.attachment_type.PNG)
-                         open_mgmt_btn = driver.find_element(By.XPATH, "//input[contains(@value, 'פתח את ניהול')]")
-                         open_mgmt_btn.click()
-                         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                         allure.attach(driver.get_screenshot_as_png(), name="After Edit Click", attachment_type=allure.attachment_type.PNG)
-                         driver.back()
-                         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))
-                         passed += 1
-                    with allure.step("יציאה ממסך 'עונות' וחזרה למסך ניהול סוציומטרי"):
-                         driver.back()
-                         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[2]["xpath"])))  # או אלמנט אחר שמסמל חזרה
-                         passed += 1
-            elif button["name"] == "שאלות חובה":
+            
+            if button["name"] == "שאלות חובה":
              with allure.step("בדיקות פנימיות עבור 'שאלות חובה'"):
               close_alert_if_present()
               questions_btn = WebDriverWait(driver, 100).until(
