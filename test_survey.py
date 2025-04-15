@@ -1,6 +1,8 @@
 import pytest
 import allure
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -139,13 +141,21 @@ def test_survey_buttons(driver):
             
             if button["name"] == "שאלות חובה":
              with allure.step("בדיקות פנימיות עבור 'שאלות חובה'"):
-              close_alert_if_present()
-              questions_btn = WebDriverWait(driver, 100).until(
-                 EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-        )
-              questions_btn.click()
+                close_alert_if_present()
+                try:
+                  questions_btn = WebDriverWait(driver, 100).until(
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                )
+                  questions_btn.click()
+                except TimeoutException as e:
+                # במקרה של TimeoutException, אנחנו שומרים את הודעת השגיאה
+                 allure.attach(driver.get_screenshot_as_png(), name="❌ צילום שגיאה", attachment_type=allure.attachment_type.PNG)
+                 allure.attach(f"<b style='color:red;'>❌ שגיאה בלחיצה על '{button['name']}':</b><br><pre>{e}</pre>", 
+                              name="שגיאה", attachment_type=allure.attachment_type.HTML)
+                 failed += 1
+                 continue  # נמשיך לכפתור הבאהכפתור, נעבור לשלב הבא
 
-              with allure.step("לחיצה על 'ערוך' וחזרה"):
+             with allure.step("לחיצה על 'ערוך' וחזרה"):
                 edit_btn = WebDriverWait(driver, 100).until(
                   EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'ערוך')]"))
             )
