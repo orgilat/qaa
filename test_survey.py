@@ -284,25 +284,37 @@ def test_survey_buttons(driver):
         # חזרה לדף הקודם
                 driver.back()
                 WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'שמור')]"))  # או אלמנט אחר שמייצג חזרה לדף
-        )
+                    EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'שמור')]"))
+                )
 
                 passed += 1
 
-        # חזרה שנייה לדף המקורי
                 driver.back()
                 WebDriverWait(driver, 10).until(
-                   EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-        )
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+                )
 
               except TimeoutException as e:
-        # מדביק גם את כל הטקסט שבדף למקרה של באג
-                 allure.attach(driver.page_source, name="שגיאה באופציות סוציומטרי", attachment_type=allure.attachment_type.HTML)
-                 allure.attach(driver.current_url, name="כתובת בזמן הכישלון", attachment_type=allure.attachment_type.TEXT)
-                 pytest.fail("❌ הכפתור 'אופציות לסוציומטרי' או 'שמור' לא נמצא/לא היה לחיץ בזמן")
+                # שמירת צילום מסך למקרה של כשל
+                screenshot_path = "/tmp/screenshot_failed.png"
+                driver.save_screenshot(screenshot_path)
+                allure.attach.file(screenshot_path, name="צילום מסך", attachment_type=allure.attachment_type.PNG)
 
-            else:
-                  with allure.step(f"📌 בדיקת כפתור: '{button['name']}'"):
+                # שמירת source
+                allure.attach(driver.page_source, name="שגיאה באופציות סוציומטרי", attachment_type=allure.attachment_type.HTML)
+                allure.attach(driver.current_url, name="כתובת בזמן הכישלון", attachment_type=allure.attachment_type.TEXT)
+
+                # הדפסת כפתורים לצורך DEBUG
+                buttons = driver.find_elements(By.XPATH, "//input[@type='submit']")
+                all_buttons_info = "\n".join([
+                    f"value: {btn.get_attribute('value')} | visible: {btn.is_displayed()} | enabled: {btn.is_enabled()}"
+                    for btn in buttons
+                ])
+                allure.attach(all_buttons_info, name="כל הכפתורים בדף בעת שגיאה", attachment_type=allure.attachment_type.TEXT)
+
+                pytest.fail("❌ הכפתור 'אופציות לסוציומטרי' או 'שמור' לא נמצא/לא היה לחיץ בזמן")
+
+                with allure.step(f"📌 בדיקת כפתור: '{button['name']}'"):
                     try:
                        start_time = time.time()
 
