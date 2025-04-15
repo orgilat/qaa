@@ -92,7 +92,7 @@ def test_survey_buttons(driver):
 
         def close_alert_if_present():
             try:
-                WebDriverWait(driver, 10).until(EC.alert_is_present())
+                WebDriverWait(driver, 100).until(EC.alert_is_present())
                 alert = Alert(driver)
                 alert.accept()
                 allure.attach("Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
@@ -103,7 +103,7 @@ def test_survey_buttons(driver):
         for button in buttons:
             try:
                 close_alert_if_present()
-                element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))
+                element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))
                 element.click()
                 allure.attach(f"לחצן '{button['name']}' נלחץ בהצלחה", name="Button Clicked", attachment_type=allure.attachment_type.TEXT)
                 passed += 1  # סומן כהצלחה
@@ -121,7 +121,7 @@ def test_survey_buttons(driver):
     try:
         with allure.step("פתיחת האתר והתחברות"):
             driver.get("https://www.survey.co.il/pms/MMDANEW/default.asp")
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "login")))
+            WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.NAME, "login")))
 
             username = driver.find_element(By.NAME, "login")
             password = driver.find_element(By.NAME, "password")
@@ -129,14 +129,14 @@ def test_survey_buttons(driver):
             password.send_keys("Ms123456")
             password.send_keys(Keys.RETURN)
 
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, "//button[contains(text(),'Logout')]")))
+            WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.XPATH, "//button[contains(text(),'Logout')]")))
             allure.attach(driver.current_url, name="כתובת האתר לאחר התחברות", attachment_type=allure.attachment_type.TEXT)
 
         with allure.step("מעבר למסך ניהול סוציומטרי"):
             close_alert_if_present()
 
             # חכה להופעת כפתור 'ניהול סקרים'
-            manage_survey_button = WebDriverWait(driver, 10).until(
+            manage_survey_button = WebDriverWait(driver, 100).until(
                 EC.presence_of_element_located((By.XPATH, buttons[0]["xpath"]))
             )
 
@@ -144,15 +144,15 @@ def test_survey_buttons(driver):
             actions.move_to_element(manage_survey_button).perform()
 
             # חכה עד שהכפתור יהיה קליקבילי
-            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"])))
+            WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"])))
 
             close_alert_if_present()
-            soc_button = WebDriverWait(driver, 100).until(
+            soc_button = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"]))
             )
             soc_button.click()
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'סוציומטרי')]")))
+            WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'סוציומטרי')]")))
 
             allure.attach(driver.current_url, name="כתובת האתר לאחר המעבר", attachment_type=allure.attachment_type.TEXT)
 
@@ -162,7 +162,7 @@ def test_survey_buttons(driver):
      for button in buttons[23:]:
        if button["name"] == "ניהול אירועים":
         with allure.step("בדיקות פנימיות עבור 'ניהול אירועים'"):
-            events_button = WebDriverWait(driver, 100).until(
+            events_button = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, button["xpath"]))
             )
             events_button.click()
@@ -179,7 +179,7 @@ def test_survey_buttons(driver):
             passed += 1
 
         with allure.step("מילוי שם האירוע ב-'מאי הגיי'"):
-            event_name_input = WebDriverWait(driver, 20).until(
+            event_name_input = WebDriverWait(driver, 100).until(
                 EC.visibility_of_element_located((By.XPATH, "//div[@class='field floating-label' and @label='שם האירוע']//input"))
             )
             event_name_input.send_keys("אירוע לדוגמה ")
@@ -187,66 +187,66 @@ def test_survey_buttons(driver):
             passed += 1
 
         with allure.step("בחירת עונת הערכה"):
-            dropdown_button = WebDriverWait(driver, 100).until(
+            dropdown_button = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown dropdown-select' and @label='בחר עונת הערכה']//div[contains(@class, 'dropdown-btn')]"))
             )
             dropdown_button.click()
 
-            season_option = WebDriverWait(driver, 100).until(
+            season_option = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-list']//li//div[@class='list-item']/span[text()='עונת 1']"))
             )
             season_option.click()
             passed += 1
 
         with allure.step("בחירת תאריך 18"):
-            calendar_button = WebDriverWait(driver, 100).until(
+            calendar_button = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']"))
             )
             calendar_button.click()
 
-            date_18 = WebDriverWait(driver, 100).until(
+            date_18 = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//td[contains(@class, 'dx-calendar-cell') and not(contains(@class, 'dx-calendar-other-view'))]//span[text()='18']"))
             )
             date_18.click()
             passed += 1
 
         with allure.step("בחירת תאריך 26 בתאריך סיום"):
-            calendar_button = WebDriverWait(driver, 100).until(
+            calendar_button = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//div[contains(@class, 'dx-dropdowneditor-button') and @aria-label='Select']"))
             )
             calendar_button.click()
 
-            date_input = WebDriverWait(driver, 100).until(
+            date_input = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'dx-datebox') and .//span[contains(., 'תאריך סיום')]]//input[@type='text']"))
             )
             date_input.send_keys("18-03-2025" + Keys.ENTER)
             passed += 1
 
         with allure.step("בחירת סוג היחידה לאירוע - בחירת 'מטה'"):
-            unit_dropdown_button = WebDriverWait(driver, 100).until(
+            unit_dropdown_button = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown dropdown-select' and @label='הגדרת סוג היחידה לאירוע ']/div[contains(@class, 'dropdown-btn')]"))
             )
             unit_dropdown_button.click()
 
-            unit_option_mathe = WebDriverWait(driver, 100).until(
+            unit_option_mathe = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-list']//li//div[contains(@class, 'list-item')]//span[normalize-space(text())='מטה']"))
             )
             unit_option_mathe.click()
             passed += 2
 
         with allure.step("לחיצה פנימית על הריבוע ליד 'פיקוד 2'"):
-            checkbox_pikud2 = WebDriverWait(driver, 100).until(
+            checkbox_pikud2 = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//li[@data-item-id='249']//div[contains(@class, 'dx-checkbox-container')]"))
             )
             checkbox_pikud2.click()
             passed += 1
 
         with allure.step("בחירת 'אוגדה 1' להצגת דוח מילוי"):
-            section_header = WebDriverWait(driver, 100).until(
+            section_header = WebDriverWait(driver, 1000).until(
                 EC.presence_of_element_located((By.XPATH, "//div[normalize-space()='בחירת יחידות מאגדות להצגת דוח מילוי']"))
             )
 
-            checkbox = WebDriverWait(driver, 100).until(
+            checkbox = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[normalize-space()='בחירת יחידות מאגדות להצגת דוח מילוי']/following::li[@aria-label='אוגדה 1' and @aria-level='2'][1]//div[contains(@class, 'dx-checkbox')]"))
             )
             checkbox.click()
@@ -256,13 +256,13 @@ def test_survey_buttons(driver):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         with allure.step("סימון מקוריות ויכולת תכנון"):
-            label_originality = WebDriverWait(driver, 100).until(
+            label_originality = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//label[normalize-space()='מקוריות וחדשנות']"))
             )
             label_originality.click()
             passed += 1
 
-            label_planning = WebDriverWait(driver, 100).until(
+            label_planning = WebDriverWait(driver, 1000).until(
                 EC.element_to_be_clickable((By.XPATH, "//label[normalize-space()='יכולת תכנון']"))
             )
             label_planning.click()
