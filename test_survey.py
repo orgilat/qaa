@@ -91,180 +91,192 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
         בודקת אם יש חלון Alert פתוח, ואם כן, סוגרת אותו.
         """
     try:
-         WebDriverWait(driver, 10).until(EC.alert_is_present())
-         alert = Alert(driver)
-         alert.accept()
-         allure.attach("חלון Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
+        WebDriverWait(driver, 20).until(EC.alert_is_present())  # מחכה שה-Alert יופיע
+        alert = Alert(driver)
+        alert.accept()  # קבלת ה-alert ולחיצה על "OK"
+        allure.attach("חלון Alert נסגר בהצלחה", name="Alert", attachment_type=allure.attachment_type.TEXT)
     except Exception as e:
-      
-            allure.attach(f"הודעת Alert לא נמצאה: {e}", name="Alert Info", attachment_type=allure.attachment_type.TEXT)
-
+        # טיפול בשגיאות כלליות אם לא נמצא alert
+        allure.attach(f"הודעת Alert לא נמצאה או שגיאה אחרת: {e}", name="Alert Info", attachment_type=allure.attachment_type.TEXT)
+  
     try:
         with allure.step("פתיחת האתר והתחברות"):
             driver.get("https://www.survey.co.il/pms/MMDANEW/default.asp")
-            time.sleep(0.5)
+    
+    # חכה לשדות התחברות
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "login")))
             username = driver.find_element(By.NAME, "login")
             password = driver.find_element(By.NAME, "password")
+    
             username.send_keys("MARINAS")
             password.send_keys("Ms123456")
             password.send_keys(Keys.RETURN)
-            time.sleep(0.5)
+    
+    # חכה שהעמוד הבא יטען ע"י נוכחות של אלמנט כלשהו שידוע לך שהוא מופיע רק אחרי התחברות,
+    # אם אין לך כזה, אפשר לחכות שה-URL ישתנה או יכיל מחרוזת מסוימת:
+            WebDriverWait(driver, 10).until(EC.url_contains("default.asp"))  # או כתובת אחרת שאתה מצפה לה
+    
             allure.attach(driver.current_url, name="כתובת האתר לאחר התחברות", attachment_type=allure.attachment_type.TEXT)
 
         with allure.step("מעבר למסך ניהול סוציומטרי"):
             close_alert_if_present()
-            manage_survey_button = WebDriverWait(driver, 50).until(
-                EC.presence_of_element_located((By.XPATH, buttons[0]["xpath"]))
-            )
-            actions = ActionChains(driver)
-            actions.move_to_element(manage_survey_button).perform()
-            time.sleep(0.5)
-            close_alert_if_present()
-            soc_button = WebDriverWait(driver, 50).until(
-                EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"]))
-            )
-            soc_button.click()
-            time.sleep(0.5)
-            allure.attach(driver.current_url, name="כתובת האתר במסך סוציומטרי", attachment_type=allure.attachment_type.TEXT)
+        
+        # חכה להופעת כפתור 'ניהול סקרים'
+        manage_survey_button = WebDriverWait(driver, 50).until(
+            EC.presence_of_element_located((By.XPATH, buttons[0]["xpath"]))
+        )
+        actions = ActionChains(driver)
+        actions.move_to_element(manage_survey_button).perform()
+        
+        # במקום time.sleep(0.5), השתמש ב-WebDriverWait כאן אם הכפתור כבר מוצג
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"])))
+        
+        close_alert_if_present()
+        soc_button = WebDriverWait(driver, 50).until(
+            EC.element_to_be_clickable((By.XPATH, buttons[1]["xpath"]))
+        )
+        soc_button.click()
+
+        # חכה להופעת כתובת האתר החדשה אחרי הלחיצה
+        WebDriverWait(driver, 10).until(EC.url_contains("pms/MMDANEW/default.asp"))
+        
+        allure.attach(driver.current_url, name="כתובת האתר במסך סוציומטרי", attachment_type=allure.attachment_type.TEXT)
 
         # מעבר על שאר הכפתורים במסך ניהול סוציומטרי
         for button in buttons[2:22]:
             if button["name"] == "עונות":
                 with allure.step("בדיקות פנימיות עבור 'עונות'"):
                     close_alert_if_present()
+
                     seasons_button = WebDriverWait(driver, 50).until(
-                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-                    )
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+    )
                     seasons_button.click()
-                    time.sleep(0.5)
                     with allure.step("לחיצה על 'שאלות חובה לסוציומטרי' וחזרה"):
-                        mandatory_btn = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שאלות חובה לסוציומטרי')]"))
-                        )
-                        mandatory_btn.click()
-                        time.sleep(0.5)
-                        driver.back()
-                        time.sleep(0.5)
-                        passed += 1
+                       mandatory_btn = WebDriverWait(driver, 50).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שאלות חובה לסוציומטרי')]"))
+        )
+                       mandatory_btn.click()
+                       WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))  # עד שיטען
+                       driver.back()
+                       WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שדות לפילטור')]")))
+                       passed += 1
                     with allure.step("לחיצה על 'שדות לפילטור' וחזרה"):
-                        filter_btn = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שדות לפילטור')]"))
-                        )
+                        filter_btn = driver.find_element(By.XPATH, "//input[contains(@value, 'שדות לפילטור')]")
                         filter_btn.click()
-                        time.sleep(0.5)
+                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
                         driver.back()
-                        time.sleep(0.5)
+                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'עריכה')]")))
                         passed += 1
                     with allure.step("לחיצה על 'עריכה' וחזרה"):
-                        edit_btn = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'עריכה')]"))
-                        )
+                        edit_btn = driver.find_element(By.XPATH, "//input[contains(@value, 'עריכה')]")
                         edit_btn.click()
-                        time.sleep(0.5)
+                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
                         driver.back()
-                        time.sleep(0.5)
+                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'פתח את ניהול')]")))
                         passed += 1
+
                     with allure.step("לחיצה על 'פתח את ניהול' וחזרה"):
-                        allure.attach(driver.get_screenshot_as_png(), name="Before Edit Click", attachment_type=allure.attachment_type.PNG)
-                        open_mgmt_btn = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'פתח את ניהול')]"))
-                        )
-                        open_mgmt_btn.click()
-                        time.sleep(0.5)
-                        allure.attach(driver.get_screenshot_as_png(), name="After Edit Click", attachment_type=allure.attachment_type.PNG)
-                        driver.back()
-                        time.sleep(0.5)
-                        passed += 1
+                         allure.attach(driver.get_screenshot_as_png(), name="Before Edit Click", attachment_type=allure.attachment_type.PNG)
+                         open_mgmt_btn = driver.find_element(By.XPATH, "//input[contains(@value, 'פתח את ניהול')]")
+                         open_mgmt_btn.click()
+                         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                         allure.attach(driver.get_screenshot_as_png(), name="After Edit Click", attachment_type=allure.attachment_type.PNG)
+                         driver.back()
+                         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))
+                         passed += 1
                     with allure.step("יציאה ממסך 'עונות' וחזרה למסך ניהול סוציומטרי"):
-                        driver.back()
-                        time.sleep(0.5)
-                    passed += 1
+                         driver.back()
+                         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[2]["xpath"])))  # או אלמנט אחר שמסמל חזרה
+                         passed += 1
             elif button["name"] == "שאלות חובה":
-                with allure.step("בדיקות פנימיות עבור 'שאלות חובה'"):
-                    close_alert_if_present()
-                    questions_btn = WebDriverWait(driver, 50).until(
-                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-                    )
-                    questions_btn.click()
-                    time.sleep(0.5)
-                    with allure.step("לחיצה על 'ערוך' וחזרה"):
-                        edit_btn = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'ערוך')]"))
-                        )
-                        edit_btn.click()
-                        time.sleep(0.5)
-                        driver.back()
-                        time.sleep(0.5)
-                    passed += 1
-                    driver.back()
-                    time.sleep(0.5)
+             with allure.step("בדיקות פנימיות עבור 'שאלות חובה'"):
+              close_alert_if_present()
+              questions_btn = WebDriverWait(driver, 50).until(
+              EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+        )
+              questions_btn.click()
+
+              with allure.step("לחיצה על 'ערוך' וחזרה"):
+                edit_btn = WebDriverWait(driver, 50).until(
+                EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'ערוך')]"))
+            )
+                edit_btn.click()
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                driver.back()
+
+                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))  # חזרה למסך שאלות חובה
+                driver.back()
+                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, buttons[2]["xpath"])))  # חזרה לניהול סוציומטרי
+                passed += 1
             elif button["name"] == "חוקים על שאלות":
                 with allure.step("בדיקות פנימיות עבור 'חוקים על שאלות'"):
                     with allure.step("כניסה למסך 'חוקים על שאלות'"):
-                        element = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-                        )
-                        element.click()
-                        time.sleep(1)
+                      element = WebDriverWait(driver, 50).until(
+                      EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+            )
+                      element.click()
                     with allure.step("הקלדה בתיבת החיפוש בתוך 'חוקים על שאלות'"):
                         search_input = WebDriverWait(driver, 50).until(
-                            EC.visibility_of_element_located((By.ID, "dt-search-0"))
-                        )
+                        EC.visibility_of_element_located((By.ID, "dt-search-0"))
+            )
                         search_input.clear()
                         search_input.send_keys("שי אגיב שי אגיב")
-                        time.sleep(0.5)
                         passed += 1
                     with allure.step("לחיצה על 'שאלון סוציומטרי' בתוך 'חוקים על שאלות'"):
                         combo = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.ss-arrow"))
-                        )
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, "svg.ss-arrow"))
+            )
                         combo.click()
-                        time.sleep(0.5)
                         passed += 1
 
-                    driver.back()
-                    time.sleep(0.5)
+                        driver.back()
+                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))  # חזרה
+
                     
             elif button["name"] == "כללי השתתפות לפי סוג יחידה":
-              with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
-                close_alert_if_present()
-                unit_participation_btn = WebDriverWait(driver, 50).until(  # הגברנו את זמן ההמתנה
-                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-                )
-                driver.execute_script("arguments[0].scrollIntoView();", unit_participation_btn)  # גלול אם צריך
-                unit_participation_btn.click()
-                time.sleep(0.5)
+                with allure.step("בדיקות פנימיות עבור 'כללי השתתפות לפי סוג יחידה'"):
+                  close_alert_if_present()
+                  unit_participation_btn = WebDriverWait(driver, 50).until(
+                  EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+        )
+                  driver.execute_script("arguments[0].scrollIntoView();", unit_participation_btn)
+                  unit_participation_btn.click()
+
                 with allure.step("לחיצה על 'הוסף ימי היעדרות' וחזרה"):
-                    add_absence_btn = WebDriverWait(driver, 50).until(  # הגברנו את זמן ההמתנה
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]"))
-                    )
+                    add_absence_btn = WebDriverWait(driver, 50).until(
+                    EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]"))
+            )
                     add_absence_btn.click()
-                    time.sleep(0.5)
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
                     driver.back()
-                    time.sleep(0.5)
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'הוסף ימי היעדרות')]")))
                     driver.back()
-                    time.sleep(0.5)
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button["xpath"])))
                     passed += 1
             elif button["name"] == "אופציות לסוציומטרי":
                 with allure.step("בדיקות פנימיות עבור 'אופציות לסוציומטרי'"):
-                    options_button = WebDriverWait(driver, 50).until(  # הגברנו את זמן ההמתנה
-                        EC.element_to_be_clickable((By.XPATH, button["xpath"]))
-                    )
-                    driver.execute_script("arguments[0].scrollIntoView();", options_button)  # גלול אם צריך
+                    options_button = WebDriverWait(driver, 50).until(
+                    EC.element_to_be_clickable((By.XPATH, button["xpath"]))
+        )
+                    driver.execute_script("arguments[0].scrollIntoView();", options_button)
                     options_button.click()
-                    time.sleep(0.5)
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
 
                     with allure.step("לחיצה על 'שמור' וחזרה"):
+                       with allure.step("לחיצה על 'שמור' וחזרה"):
                         save_button = WebDriverWait(driver, 50).until(
-                            EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שמור')]"))
-                        )
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, 'שמור')]"))
+    )
                         save_button.click()
-                        time.sleep(0.5)
+
+    # הודעת ויזואלית מדליקה – לא נוגע 😎
                         driver.execute_script("""
-                              var message = document.createElement('div');
-                              message.innerText = '✅ לחצתי על שמור!';
-                              message.style.position = 'fixed';
-         message.style.top = '20px';
+        var message = document.createElement('div');
+        message.innerText = '✅ לחצתי על שמור!';
+        message.style.position = 'fixed';
+        message.style.top = '20px';
         message.style.right = '20px';
         message.style.backgroundColor = 'green';
         message.style.color = 'white';
@@ -273,13 +285,20 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
         message.style.zIndex = '9999';
         message.style.fontSize = '20px';
         document.body.appendChild(message);
-        setTimeout(function(){ message.remove(); }, 50000); // ההודעה תיעלם אחרי 3 שניות
+        setTimeout(function(){ message.remove(); }, 3000); // ההודעה תיעלם אחרי 3 שניות
     """)
-                        driver.back()
 
-                    passed += 1
-                    driver.back()
-                    time.sleep(0.5)
+    # חזרה אחורה וממתין שנטען שוב דף קודם
+                        driver.back()
+                        WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//input[contains(@value, 'שמור')]"))  # או כל אלמנט שמבטיח שהדף הקודם נטען
+    )
+
+                       passed += 1
+                       driver.back()
+                       WebDriverWait(driver, 10).until(
+                       EC.element_to_be_clickable((By.XPATH, button["xpath"]))  # דואג שהחזרה הושלמה
+)
 
                         
             else:
