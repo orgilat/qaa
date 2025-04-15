@@ -3,10 +3,12 @@ name: Run Pytest Tests and Generate Allure Report
 on:
   push:
     branches:
-      - main
+      - main  # אתה יכול להשאיר את זה אם אתה רוצה להריץ את הבדיקות על main
+      - master  # אם גם אתה רוצה להריץ את הבדיקות על master
   pull_request:
     branches:
       - main
+      - master  # אם תרצה להפעיל את הבדיקות גם כאשר יש pull request לשני הברנצים
   workflow_dispatch:
 
 jobs:
