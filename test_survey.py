@@ -518,22 +518,29 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
 
     with allure.step("Clicking on the 'הצג פוטנציאל' button using JavaScript"):
     # Locate the button using its text
-     button22 = WebDriverWait(driver, 30).until(
+      button_recalculate = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'חשב פוטנציאל מחדש')]"))
     )
-    # Use JavaScript to click on the button
-     button22.click()  # הנה הלחיצה הכי פשוטה שיש!
-     time.sleep(15)
+    button_recalculate.click()
+    
+    # המתן להיעלמות הלודר או להופעת תוצאה חדשה
+    WebDriverWait(driver, 30).until_not(
+        EC.presence_of_element_located((By.CSS_SELECTOR, ".q-loading"))
+    )
 
     with allure.step("Clicking on the 'הצג פוטנציאל' button using JavaScript"):
     # Locate the button using its text
-     button21 = WebDriverWait(driver, 30).until(
+     button_show = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'הצג פוטנציאל')]"))
     )
-    # Use JavaScript to click on the button
-     button21.click()  # הנה הלחיצה הכי פשוטה שיש!
-     time.sleep(24)
+     button_show.click()
 
+    # המתן להופעת טבלת התוצאות או רכיב מייצג אחר
+     WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located(
+            (By.XPATH, "//div[contains(@class, 'dx-datagrid-rowsview')]//table")
+        )
+    )
 
 
     with allure.step("Click leftmost dropdown button"):
@@ -578,23 +585,32 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
                     time.sleep(0.3)  # זמן קצר יותר כי המערכת מגיבה מהר בלחיצה
 
                 with allure.step("Click the dropdown button"):
-                    dropdown_button = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable(
-                            (By.XPATH, "//div[@class='dropdown-btn text-box valid populated']")
-                        )
-                    )
-                    dropdown_button.click()
-                    time.sleep(0.2)  # זמן קצר יותר לפתיחת ה-dropdown
+                 WebDriverWait(driver, 10).until_not(
+                  EC.presence_of_element_located((
+                    By.XPATH,
+            "//div[contains(@class, 'dx-overlay-wrapper') and contains(@class, 'dx-loadpanel-wrapper')]"
+        ))
+    )
+
+    # רק אחרי שהשכבה נעלמה - לחץ על ה-dropdown
+                dropdown_button = WebDriverWait(driver, 5).until(
+                  EC.element_to_be_clickable(
+                    (By.XPATH, "//div[@class='dropdown-btn text-box valid populated']")
+        )
+    )
+                dropdown_button.click()
+                time.sleep(0.2)  # זמן קצר יותר לפתיחת ה-dropdown
+
 
                 with allure.step("Select 'המוערך נוסף על פי בקשתו' option"):
-                    option_to_select = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable(
-                            (By.XPATH, "//div[@class='list-item']/span[text()='המוערך נוסף על פי בקשתו']")
-                        )
-                    )
-                    option_to_select.click()
-                    time.sleep(0.3)
-                    passed += 1  # המתנה קצרה להשלמת הפעולה
+                 option_to_select = WebDriverWait(driver, 5).until(
+                  EC.element_to_be_clickable(
+                   (By.XPATH, "//div[@class='list-item']/span[text()='המוערך נוסף על פי בקשתו']")
+        )
+    )
+                option_to_select.click()
+                time.sleep(0.3)
+                passed += 1  # המתנה קצרה להשלמת הפעולה
 
                 # גלילה קטנה למטה כדי לחשוף את הצ'קבוקס הבא
                 driver.execute_script("window.scrollBy(0, 50);")
@@ -610,7 +626,7 @@ def test_survey_buttons(driver):  # מוזרק ה‑driver מה‑fixture
 
 
     with allure.step("Clicking on 'close' button if available"):
-     close_button = WebDriverWait(driver, 2).until(
+     close_button = WebDriverWait(driver, 22).until(
         EC.element_to_be_clickable((By.XPATH, "//i[contains(@class, 'material-icons') and normalize-space()='close']"))
     )
      close_button.click()
