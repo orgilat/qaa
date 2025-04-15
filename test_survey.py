@@ -16,7 +16,7 @@ from selenium.webdriver.chrome.service import Service
 import time
 import shutil
   # נוסיף לבדיקה האם chromedriver קיים
-driver = webdriver.Chrome()
+
 # ⏱️ לא חובה אבל נחמד לדיבוג
 start_time = time.time()
 
@@ -281,9 +281,12 @@ with allure.step("לחיצה על ניהול פוטנציאל"):
         )
         manage_potential_tab.click()
         passed += 1
+        allure.attach("ניהול פוטנציאל נלחץ בהצלחה", name="Step Success", attachment_type=allure.attachment_type.TEXT)
     except TimeoutException:
         print("❌ לא נמצא כפתור ניהול פוטנציאל")
         failed += 1
+        allure.attach("כשל בלחיצה על ניהול פוטנציאל", name="Step Failure", attachment_type=allure.attachment_type.TEXT)
+
 
 
 with allure.step("חשב פוטנציאל מחדש"):
